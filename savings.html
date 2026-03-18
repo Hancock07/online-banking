@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barclays Clone - Online Banking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        const root = document.documentElement;
+
+        root.style.setProperty('--primary-color', '#002D56');
+        root.style.setProperty('--primary-color-dark', '#001D3D');
+        root.style.setProperty('--primary-color-light', '#004A8F');
+
+        root.style.setProperty('--secondary-color', '#00AEEF');
+        root.style.setProperty('--secondary-color-dark', '#008CBE');
+        root.style.setProperty('--secondary-color-light', '#B3E8FB');
+
+        root.style.setProperty('--text-color', '#ffffff');
+        root.style.setProperty('--bg-color', '#121921');
+        root.style.setProperty('--card-bg-color', '#1a232e');
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: 'var(--primary-color)',
+                            dark: 'var(--primary-color-dark)',
+                            light: 'var(--primary-color-light)',
+                        },
+                        secondary: {
+                            DEFAULT: 'var(--secondary-color)',
+                            dark: 'var(--secondary-color-dark)',
+                            light: 'var(--secondary-color-light)',
+                        },
+                        'app-bg': 'var(--bg-color)',
+                        'card-navy': 'var(--card-bg-color)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-[#121921] text-white font-sans overflow-x-hidden">
+
+    <div id="search-bar"
+        class="fixed top-0 left-0 w-full bg-[#001D3D] border-b border-blue-900 p-4 z-[100] transform -translate-y-full transition-transform duration-300 ease-in-out">
+        <div
+            class="max-w-4xl mx-auto flex items-center bg-[#121921] rounded-full px-4 py-2 border border-blue-800 focus-within:border-[#00AEEF]">
+            <i data-lucide="search" class="text-gray-400 w-5 h-5 mr-3"></i>
+            <input type="text" placeholder="What are you looking for?"
+                class="bg-transparent w-full outline-none text-white text-sm">
+            <button id="close-search" class="text-gray-400 hover:text-white"><i data-lucide="x"
+                    class="w-5 h-5"></i></button>
+        </div>
+    </div>
+
+    <div id="menu-overlay"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
+    </div>
+    <div id="mobile-drawer"
+        class="fixed top-0 right-0 h-full w-[80%] max-w-sm bg-[#002D56] z-[70] transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl p-6">
+        <div class="flex justify-between items-center mb-8">
+            <span class="text-[#00AEEF] font-bold">MENU</span>
+            <button id="close-menu" class="text-white"><i data-lucide="x"></i></button>
+        </div>
+        <nav class="flex flex-col space-y-6 font-bold">
+            <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+            <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+            <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+            <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+            <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+            <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+            <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+            <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+            <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+        </nav>
+    </div>
+
+    <nav class="bg-[#002D56] border-b border-blue-900 px-4 py-3 lg:px-20 relative z-50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center space-x-2 text-2xl font-bold tracking-tighter text-[#00AEEF]">
+                    <i data-lucide="bird"></i>
+                    <span>BARCLAYS</span>
+                </div>
+                <div class="hidden lg:flex space-x-6 text-sm font-medium">
+                    <a href="#" class="border-b-2 border-[#00AEEF] pb-1">Personal</a>
+                    <a href="#" class="hover:text-blue-300">Business</a>
+                    <a href="#" class="hover:text-blue-300">Corporate</a>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <button id="search-trigger" class="hidden md:flex items-center text-sm">
+                    <i data-lucide="search" class="w-4 h-4 mr-2"></i>Search
+                </button>
+                <button
+                    class="bg-[#00AEEF] text-[#002D56] px-6 py-2 rounded-full font-bold text-sm hover:bg-white transition">
+                    Log in
+                </button>
+                <button class="lg:hidden" id="menu-btn"><i data-lucide="menu"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hidden lg:flex bg-[#002D56] px-20 py-4 space-x-8 text-sm border-t border-blue-800 font-bold sticky top-0 z-50">
+        <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+        <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+        <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+        <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+        <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+        <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+        <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+        <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+        <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+    </div>
+
+    <section class="max-w-[1200px] mx-auto px-8 py-16 bg-blue-500">
+        <div class="relative overflow-hidden rounded-3xl shadow-2xl bg-gradient-to-br from-[#003d73] to-[#001D3D] group"
+            data-aos="fade-up">
+
+            <div
+                class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                <i data-lucide="bird" class="w-80 h-80 text-white"></i>
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center">
+                <div class="md:w-3/5 p-10 md:p-16">
+                    <h4 class="text-sm md:text-sm text-white mb-6 leading-tight">
+                        PERSONAL BANKING
+                    </h4>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
+                        TIME IS MONEY
+                    </h2>
+                    <p class="text-blue-100 text-lg mb-10 max-w-lg leading-relaxed">
+                        You only have until 5 April to make the most of your £20,000 ISA allowance. You won’t pay tax on
+                        any money you make, so take a look at our cash and Investment ISAs today.
+                    </p>
+                    <p class="text-blue-100 text-lg mb-10 max-w-lg leading-relaxed">
+                        Terms, conditions and ISA rules apply. With investments, capital is at risk.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button
+                            class="text-white font-bold px-10 py-3 rounded-full border border-[#ffffff] hover:bg-white hover:text-blue-600 transition-all shadow-lg">
+                            Cash ISAs
+                        </button>
+                        <button
+                            class="text-white font-bold px-10 py-3 rounded-full border border-[#ffffff] hover:bg-white hover:text-blue-600 transition-all shadow-lg">
+                            Investment ISA
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="md:w-2/5 w-full h-64 md:h-auto self-stretch">
+                    <img src="./assets/images/Time-is-money.png" alt="Step-by-step guide"
+                        class="w-full h-full object-cover md:rounded-l-3xl shadow-inner">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1f2a44] py-20">
+        <div class="max-w-7xl mx-auto px-6" data-aos="fade-up">
+            <!-- ALERT -->
+            <div class="border border-blue-500/40 bg-[#16213a] rounded-xl px-6 py-4 mb-14 flex items-start gap-3">
+
+                <i data-lucide="info" class="w-5 h-5 text-blue-400 mt-1"></i>
+
+                <p class="text-gray-300 text-sm">
+                    <span class="text-white font-medium">
+                        Support if you're affected by events in the Middle East
+                    </span><br>
+                    We're here to help. If you're a Barclays customer and your finances are affected by recent events,
+                    find more information and help on our
+                    <a href="#" class="text-blue-400 underline">Middle East support page</a>.
+                </p>
+
+            </div>
+
+
+            <!-- HEADER -->
+            <div class="mb-12">
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-3">
+                    Your Barclays experience starts here
+                </h2>
+                <p class="text-gray-400 max-w-3xl">
+                    See how we can help you with current accounts, mortgages, insurance, loans, credit cards and savings
+                    accounts.
+                </p>
+            </div>
+
+
+            <!-- GRID -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <!-- CARD -->
+                <div
+                    class="group bg-[#0f1b36] p-6 rounded-xl hover:shadow-xl hover:shadow-blue-500/10 transition hover:-translate-y-1">
+
+                    <i data-lucide="wallet" class="w-6 h-6 text-blue-400 mb-4"></i>
+
+                    <h3 class="text-white font-semibold mb-2">
+                        Current accounts
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mb-6">
+                        Find a current account that works for you.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 group-hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm transition">
+                        View current accounts
+                    </a>
+
+                </div>
+
+
+                <!-- CARD -->
+                <div
+                    class="group bg-[#0f1b36] p-6 rounded-xl hover:shadow-xl hover:shadow-blue-500/10 transition hover:-translate-y-1">
+
+                    <i data-lucide="credit-card" class="w-6 h-6 text-blue-400 mb-4"></i>
+
+                    <h3 class="text-white font-semibold mb-2">
+                        Credit cards
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mb-6">
+                        Choice is the key to finding the right credit card.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 group-hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm transition">
+                        View credit cards
+                    </a>
+
+                </div>
+
+
+                <!-- CARD -->
+                <div
+                    class="group bg-[#0f1b36] p-6 rounded-xl hover:shadow-xl hover:shadow-blue-500/10 transition hover:-translate-y-1">
+
+                    <i data-lucide="piggy-bank" class="w-6 h-6 text-blue-400 mb-4"></i>
+
+                    <h3 class="text-white font-semibold mb-2">
+                        Savings accounts
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mb-6">
+                        Whatever you're dreaming of, you can start saving today.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 group-hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm transition">
+                        View savings accounts
+                    </a>
+
+                </div>
+
+
+                <!-- CARD -->
+                <div
+                    class="group bg-[#0f1b36] p-6 rounded-xl hover:shadow-xl hover:shadow-blue-500/10 transition hover:-translate-y-1">
+
+                    <i data-lucide="banknote" class="w-6 h-6 text-blue-400 mb-4"></i>
+
+                    <h3 class="text-white font-semibold mb-2">
+                        Loans
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mb-6">
+                        Focus on the future with a personal loan.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 group-hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm transition">
+                        View loans
+                    </a>
+
+                </div>
+
+
+                <!-- ROW 2 -->
+
+                <div
+                    class="group bg-[#0f1b36] p-6 rounded-xl hover:shadow-xl hover:shadow-blue-500/10 transition hover:-translate-y-1">
+
+                    <i data-lucide="home" class="w-6 h-6 text-blue-400 mb-4"></i>
+
+                    <h3 class="text-white font-semibold mb-2">
+                        Mortgages
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mb-6">
+                        Take a look at mortgage options for your plans.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 group-hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm transition">
+                        View mortgages
+                    </a>
+
+                </div>
+
+
+                <div
+                    class="group bg-[#0f1b36] p-6 rounded-xl hover:shadow-xl hover:shadow-blue-500/10 transition hover:-translate-y-1">
+
+                    <i data-lucide="umbrella" class="w-6 h-6 text-blue-400 mb-4"></i>
+
+                    <h3 class="text-white font-semibold mb-2">
+                        Insurance
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mb-6">
+                        A safety net for unpredictable events.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 group-hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm transition">
+                        View insurance
+                    </a>
+
+                </div>
+
+
+                <div
+                    class="group bg-[#0f1b36] p-6 rounded-xl hover:shadow-xl hover:shadow-blue-500/10 transition hover:-translate-y-1">
+
+                    <i data-lucide="trending-up" class="w-6 h-6 text-blue-400 mb-4"></i>
+
+                    <h3 class="text-white font-semibold mb-2">
+                        Investments
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mb-6">
+                        Make the most of your money with smart investing.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 group-hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm transition">
+                        View investments
+                    </a>
+
+                </div>
+
+
+                <div
+                    class="group bg-[#0f1b36] p-6 rounded-xl hover:shadow-xl hover:shadow-blue-500/10 transition hover:-translate-y-1">
+
+                    <i data-lucide="layers" class="w-6 h-6 text-blue-400 mb-4"></i>
+
+                    <h3 class="text-white font-semibold mb-2">
+                        Subscriptions
+                    </h3>
+
+                    <p class="text-gray-400 text-sm mb-6">
+                        Start enjoying subscriptions through the Barclays app.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 group-hover:bg-blue-500 text-white px-5 py-2 rounded-full text-sm transition">
+                        View subscriptions
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1f2a44] text-white">
+        <!-- SECTION 1 -->
+        <div class="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+
+            <div class="rounded-xl flex justify-center items-center">
+                <img src="./assets/images/616 x 462px_Teal.png" class="w-84">
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-semibold mb-4">Our switch offers</h2>
+                <p class="text-gray-300 mb-6">
+                    See how much you could earn when you switch your account to us.
+                </p>
+                <button
+                    class="border border-blue-400 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                    More about switching
+                </button>
+            </div>
+
+        </div>
+
+
+        <!-- SECTION 2 (Image Left) -->
+        <div class="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+
+            <img src="./assets/images/GettyImages-1141468457.png" class="rounded-xl w-full">
+
+            <div>
+                <h2 class="text-2xl font-semibold mb-4">
+                    Focus on the future with a personal loan
+                </h2>
+                <p class="text-gray-400 mb-6 text-sm">
+                    Borrowing to suit you. Subject to application, financial circumstances and borrowing history.
+                </p>
+                <button
+                    class="border border-blue-400 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                    Compare our loans
+                </button>
+            </div>
+
+        </div>
+
+
+        <!-- SECTION 3 (Image Right) -->
+        <div class="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+
+            <div>
+                <h2 class="text-3xl font-semibold mb-4">
+                    Thinking of buying a car?
+                </h2>
+                <p class="text-gray-400 mb-6 text-sm max-w-md">
+                    Whether it's your first car or your dream car, our tips on how to save, buy and care for your
+                    vehicle could help you get on the road.
+                </p>
+                <button
+                    class="border border-blue-400 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                    Buying a car
+                </button>
+            </div>
+
+            <img src="./assets/images/GettyImages-2204879619.png" class="rounded-xl w-full">
+
+        </div>
+
+
+        <!-- BLUE CTA STRIP -->
+        <div class="bg-[#0b2c84] py-10 px-6" data-aos="fade-up">
+
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+
+                <div>
+                    <h3 class="text-xl font-semibold mb-1">
+                        Join the 12 million customers banking in our app
+                    </h3>
+                    <p class="text-blue-200 text-sm">
+                        Banking made simple, secure and always within reach.
+                    </p>
+                </div>
+
+                <button class="bg-white text-[#0b2c84] px-6 py-2 rounded-full font-medium hover:bg-gray-200 transition">
+                    The Barclays app
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- APP FEATURE SECTION -->
+        <div class="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+
+            <div>
+                <h2 class="text-2xl font-semibold mb-4">
+                    Powerful features at your fingertips
+                </h2>
+                <p class="text-gray-400 mb-6 text-sm max-w-md">
+                    From smart budgeting tools to instant notifications and card controls, the Barclays app helps you
+                    stay in control.
+                </p>
+                <button
+                    class="border border-blue-400 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                    Apply for Barclays bank account
+                </button>
+            </div>
+
+            <img src="./assets/images/BAR-APP-002b.png" class="w-84 mx-auto">
+
+        </div>
+
+
+        <!-- GREEN CTA -->
+        <div class="bg-teal-700 py-10 px-6" data-aos="fade-up">
+
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+
+                <div>
+                    <h3 class="text-xl font-semibold mb-1">
+                        Explore Premier Banking
+                    </h3>
+                    <p class="text-teal-100 text-sm">
+                        Discover a world of Premier benefits and perks.
+                    </p>
+                </div>
+
+                <button
+                    class="bg-teal-200 text-teal-900 px-6 py-2 rounded-full font-medium hover:bg-teal-100 transition">
+                    More about Premier
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1b2545] py-10">
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+            <!-- Left Content -->
+            <div>
+
+                <h2 class="text-2xl font-semibold text-white mb-4">
+                    Open a Barclays Bank Account
+                </h2>
+
+                <h3 class="text-lg text-white mb-6">
+                    Scan the QR code using your phone camera to get started
+                </h3>
+
+                <p class="text-gray-300 mb-8">
+                    Scan the QR code with your phone or tablet, or tap the App Store or Google Play buttons below to
+                    download the app and begin your application. T&Cs and eligibility apply. 18+ and UK only.
+                </p>
+
+                <div class="flex gap-4 flex-wrap">
+
+                    <img src="./assets/images/apple-appstore.png" class="h-12">
+
+                    <img src="./assets/images/google-play.png" class="h-12">
+
+                </div>
+
+            </div>
+            <!-- QR Code -->
+            <div class="flex justify-center lg:justify-end">
+
+                <div class="bg-white p-6 rounded-2xl">
+                    <img src="./assets/images/qr.png" class="w-56 h-56 object-contain">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Feedback Section -->
+    <section class="bg-[#0f1b36] py-16 text-center">
+        <h3 class="text-white text-xl font-semibold mb-3" data-aos="fade-up">
+            Was this helpful?
+        </h3>
+
+        <p class="text-gray-400 mb-8" data-aos="fade-up">
+            Your feedback helps us improve your experience.
+        </p>
+
+        <div class="flex justify-center gap-6" data-aos="fade-up">
+
+            <button
+                class="flex items-center gap-2 border border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                Yes
+                <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+            </button>
+
+            <button
+                class="flex items-center gap-2 border border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                No
+                <i data-lucide="thumbs-down" class="w-4 h-4"></i>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- Return to top -->
+    <div class="bg-gray-300 text-center py-4">
+        <a href="#" class="text-gray-700 underline" data-aos="fade-up">
+            Return to top
+        </a>
+
+    </div>
+
+
+    <!-- Bottom Fixed CTA -->
+    <div class="fixed bottom-0 left-0 w-full bg-[#0f1b36] py-4 flex justify-center z-50">
+        <a href="#"
+            class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-400 text-black font-semibold text-md hover:scale-105 transition-all duration-300 shadow-lg">
+            Apply for a bank account
+        </a>
+    </div>
+
+    <footer class="bg-[#292B32] border-t border-gray-700 pt-16 pb-12 px-4 lg:px-20">
+        <div class="max-w-[1200px] mx-auto">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Our products</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Current accounts</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Savings</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Loans</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Mortgages</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Insurance</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Credit cards</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Help</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Help & FAQs</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Money worries</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report fraud or a scam</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report card lost or stolen</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Access to cash</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Site information</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Important information</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Accessibility</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Privacy policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Cookie policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Security</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Find us</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Find Barclays</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Service status</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 mb-8">
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <span class="font-bold text-sm">Download the Barclays app</span>
+                    <div class="flex gap-3">
+                        <a href="#"><img
+                                src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+                                alt="App Store" class="h-10"></a>
+                        <a href="#"><img
+                                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                                alt="Google Play" class="h-10"></a>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-white p-2 rounded-full text-black hover:bg-[#00AEEF] transition"><i
+                            data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+
+            <div class="text-[13px] text-gray-400 space-y-4 mb-12 max-w-5xl">
+                <p>Barclays Bank UK PLC and Barclays Bank PLC are each authorised by the Prudential Regulation
+                    Authority
+                    and regulated by the Financial Conduct Authority and the Prudential Regulation Authority.</p>
+                <p>Barclays Investment Solutions Limited is authorised and regulated by the Financial Conduct
+                    Authority.
+                </p>
+                <p>Registered office for all: 1 Churchill Place, London E14 5HP</p>
+            </div>
+
+            <div class="flex flex-wrap gap-6 items-center">
+                <div class="bg-white p-2 rounded h-16 w-16 flex items-center justify-center">
+                    <span
+                        class="text-[10px] text-purple-900 font-bold text-center leading-none">fscs<br>PROTECTED</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <div class="w-8 h-8 bg-blue-600 flex items-center justify-center rounded-sm">
+                        <i data-lucide="check" class="text-white w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] leading-tight font-bold">CYBER<br>ESSENTIALS<br>CERTIFIED PLUS</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>Secure Digital Banking<br>KITEMARK™
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="lock" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>ISO/IEC 27001 Information Security
+                        Management<br>CERTIFIED
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize Lucide
+        lucide.createIcons();
+        // Initialize AOS
+        AOS.init({ duration: 800, once: true, easing: 'ease-in-out' });
+    </script>
+    <script>
+        lucide.createIcons();
+
+        // 1. Mobile Menu Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenu = document.getElementById('close-menu');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('menu-overlay');
+
+        function toggleMenu() {
+            drawer.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+            setTimeout(() => overlay.classList.toggle('opacity-100'), 10);
+            document.body.style.overflow = drawer.classList.contains('translate-x-full') ? '' : 'hidden';
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenu.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // 2. Search Bar Logic
+        const searchTrigger = document.getElementById('search-trigger');
+        const searchBar = document.getElementById('search-bar');
+        const closeSearch = document.getElementById('close-search');
+
+        searchTrigger.addEventListener('click', () => {
+            searchBar.classList.remove('-translate-y-full');
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchBar.classList.add('-translate-y-full');
+        });
+    </script>
+</body>
+
+</html>

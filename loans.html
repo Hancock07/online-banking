@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barclays Clone - Online Banking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        const root = document.documentElement;
+
+        root.style.setProperty('--primary-color', '#002D56');
+        root.style.setProperty('--primary-color-dark', '#001D3D');
+        root.style.setProperty('--primary-color-light', '#004A8F');
+
+        root.style.setProperty('--secondary-color', '#00AEEF');
+        root.style.setProperty('--secondary-color-dark', '#008CBE');
+        root.style.setProperty('--secondary-color-light', '#B3E8FB');
+
+        root.style.setProperty('--text-color', '#ffffff');
+        root.style.setProperty('--bg-color', '#121921');
+        root.style.setProperty('--card-bg-color', '#1a232e');
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: 'var(--primary-color)',
+                            dark: 'var(--primary-color-dark)',
+                            light: 'var(--primary-color-light)',
+                        },
+                        secondary: {
+                            DEFAULT: 'var(--secondary-color)',
+                            dark: 'var(--secondary-color-dark)',
+                            light: 'var(--secondary-color-light)',
+                        },
+                        'app-bg': 'var(--bg-color)',
+                        'card-navy': 'var(--card-bg-color)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-[#121921] text-white font-sans overflow-x-hidden">
+
+    <div id="search-bar"
+        class="fixed top-0 left-0 w-full bg-[#001D3D] border-b border-blue-900 p-4 z-[100] transform -translate-y-full transition-transform duration-300 ease-in-out">
+        <div
+            class="max-w-4xl mx-auto flex items-center bg-[#121921] rounded-full px-4 py-2 border border-blue-800 focus-within:border-[#00AEEF]">
+            <i data-lucide="search" class="text-gray-400 w-5 h-5 mr-3"></i>
+            <input type="text" placeholder="What are you looking for?"
+                class="bg-transparent w-full outline-none text-white text-sm">
+            <button id="close-search" class="text-gray-400 hover:text-white"><i data-lucide="x"
+                    class="w-5 h-5"></i></button>
+        </div>
+    </div>
+
+    <div id="menu-overlay"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
+    </div>
+    <div id="mobile-drawer"
+        class="fixed top-0 right-0 h-full w-[80%] max-w-sm bg-[#002D56] z-[70] transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl p-6">
+        <div class="flex justify-between items-center mb-8">
+            <span class="text-[#00AEEF] font-bold">MENU</span>
+            <button id="close-menu" class="text-white"><i data-lucide="x"></i></button>
+        </div>
+        <nav class="flex flex-col space-y-6 font-bold">
+            <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+            <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+            <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+            <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+            <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+            <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+            <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+            <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+            <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+        </nav>
+    </div>
+
+    <nav class="bg-[#002D56] border-b border-blue-900 px-4 py-3 lg:px-20 relative z-50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center space-x-2 text-2xl font-bold tracking-tighter text-[#00AEEF]">
+                    <i data-lucide="bird"></i>
+                    <span>BARCLAYS</span>
+                </div>
+                <div class="hidden lg:flex space-x-6 text-sm font-medium">
+                    <a href="#" class="border-b-2 border-[#00AEEF] pb-1">Personal</a>
+                    <a href="#" class="hover:text-blue-300">Business</a>
+                    <a href="#" class="hover:text-blue-300">Corporate</a>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <button id="search-trigger" class="hidden md:flex items-center text-sm">
+                    <i data-lucide="search" class="w-4 h-4 mr-2"></i>Search
+                </button>
+                <button
+                    class="bg-[#00AEEF] text-[#002D56] px-6 py-2 rounded-full font-bold text-sm hover:bg-white transition">
+                    Log in
+                </button>
+                <button class="lg:hidden" id="menu-btn"><i data-lucide="menu"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hidden lg:flex bg-[#002D56] px-20 py-4 space-x-8 text-sm border-t border-blue-800 font-bold sticky top-0 z-50">
+        <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+        <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+        <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+        <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+        <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+        <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+        <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+        <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+        <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+    </div>
+
+    <section class="max-w-[1200px] mx-auto px-8 py-16 bg-blue-500">
+        <div class="relative overflow-hidden rounded-3xl shadow-2xl bg-gradient-to-br from-[#003d73] to-[#001D3D] group"
+            data-aos="fade-up">
+
+            <div
+                class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                <i data-lucide="bird" class="w-80 h-80 text-white"></i>
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center">
+                <div class="md:w-3/5 p-10 md:p-16">
+                    <p class="mb-4 text-white text-lg">LOAN</p>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
+                        Compare our loans
+                    </h2>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-6 leading-tight">
+                        Focus on the future with a personal loan
+                    </h2>
+                    <p class="text-blue-100 text-lg mb-10 max-w-lg leading-relaxed">
+                        Get your loan rate before you apply, without it affecting your credit score. Subject to
+                        application, financial circumstances and borrowing history.
+                    </p>
+                </div>
+
+                <div class="md:w-2/5 w-full h-64 md:h-auto self-stretch">
+                    <img src="./assets/images/digital-banking-lifestyle.jpg" alt="Step-by-step guide"
+                        class="w-full h-full object-cover md:rounded-l-3xl shadow-inner">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOP CTA BAR -->
+    <div class="max-w-[1200px] mx-auto bg-[#0e7c82] py-4 px-6 flex justify-between items-center">
+        <p class="text-white font-medium" data-aos="fade-up">
+            Try our loans calculator
+        </p>
+        <a href="javascript:void(0)" id="openModal" data-aos="fade-up"
+            class="border border-white text-white px-6 py-2 rounded-full hover:bg-white hover:text-[#0e7c82] transition">
+            Loans calculator
+        </a>
+    </div>
+
+    <!-- MAIN SECTION -->
+    <section class="bg-[#0f1b36] py-20 text-center">
+
+        <div class="max-w-5xl mx-auto px-6">
+
+            <h2 class="text-3xl md:text-4xl font-semibold text-white mb-6">
+                Find a loan to suit your needs
+            </h2>
+
+            <p class="text-gray-400 mb-4">
+                When it comes to putting your plans into action, it’s personal. And with a personalised loan potentially
+                just a few clicks away, getting things moving could be simpler than you think.
+            </p>
+
+            <p class="text-gray-300 font-medium mb-12">
+                Subject to application, financial circumstances and borrowing history.
+            </p>
+
+
+            <!-- FEATURES -->
+            <div class="grid md:grid-cols-3 gap-10 text-left md:text-center mb-16">
+
+                <div class="space-y-4">
+                    <i data-lucide="pound-sterling" class="w-10 h-10 text-blue-400"></i>
+                    <h3 class="text-white font-semibold text-lg">
+                        Personal price quote – with no credit footprint
+                    </h3>
+                </div>
+
+                <div class="space-y-4">
+                    <i data-lucide="clock" class="w-10 h-10 text-blue-400"></i>
+                    <h3 class="text-white font-semibold text-lg">
+                        Apply in Online Banking or the Barclays app – most people apply in less than 10 minutes
+                    </h3>
+                </div>
+
+                <div class="space-y-4">
+                    <i data-lucide="arrow-down-right" class="w-10 h-10 text-blue-400"></i>
+                    <h3 class="text-white font-semibold text-lg">
+                        Get quick access to your money if we approve your loan
+                    </h3>
+                </div>
+
+            </div>
+
+
+            <!-- REPRESENTATIVE -->
+            <h3 class="text-white text-2xl font-semibold mb-2">
+                Representative example
+            </h3>
+
+            <p class="text-gray-400 mb-10">
+                most accepted customers get
+            </p>
+
+
+            <!-- CARDS -->
+            <div class="grid md:grid-cols-3 gap-6 mb-6">
+
+                <div class="bg-[#1d2742] p-6 rounded-xl">
+                    <p class="text-gray-400 text-sm mb-2">
+                        Representative APR (variable)
+                    </p>
+                    <p class="text-white text-xl font-semibold">
+                        6.3% APR
+                    </p>
+                </div>
+
+                <div class="bg-[#1d2742] p-6 rounded-xl">
+                    <p class="text-gray-400 text-sm mb-2">
+                        on loans of
+                    </p>
+                    <p class="text-white text-xl font-semibold">
+                        £7,500 – £15,000
+                    </p>
+                </div>
+
+                <div class="bg-[#1d2742] p-6 rounded-xl">
+                    <p class="text-gray-400 text-sm mb-2">
+                        over
+                    </p>
+                    <p class="text-white text-xl font-semibold">
+                        2–5 years
+                    </p>
+                </div>
+
+            </div>
+
+
+            <p class="text-gray-400 text-sm mb-4">
+                (Your rate may differ)
+            </p>
+
+            <p class="text-gray-500 text-sm max-w-3xl mx-auto">
+                The approval of your application depends on your financial circumstances and borrowing history, so do
+                the terms you may be offered. The interest rates may differ from those shown.
+            </p>
+        </div>
+    </section>
+
+    <section class="bg-[#2a2f4a] py-20">
+
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Header -->
+            <div class="text-center mb-16">
+
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
+                    Explore your loan options
+                </h2>
+
+                <p class="text-gray-400 max-w-3xl mx-auto">
+                    Whether you'd like a loan to consolidate debts or buy something special, we've got lending options
+                    to suit you. Subject to application, financial circumstances and borrowing history.
+                </p>
+
+            </div>
+
+
+            <!-- Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-4 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="car" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Need a new car?
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Having the money in your pocket could help you get a better deal.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Get a car loan
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-4 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="briefcase" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        How to consolidate your debt
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Consolidating could help you take control of your money – you'll have all your debts in one
+                        place, with one fixed monthly payment.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Consolidate your debt
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-4 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="sofa" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Home improvement loan
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Get more from your home – whether it's a brand new bathroom or sprucing up your lounge.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Improve your home
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-4 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="luggage" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Holiday loans
+                    </h3>
+
+                    <p class="text-gray-400">
+                        A holiday loan is when you take out a personal loan to cover the cost of your next break.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Pay for your holiday
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-4 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="rings" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Wedding loans
+                    </h3>
+
+                    <p class="text-gray-400">
+                        A wedding loan means you can pay your wedding costs in one go, then pay us back monthly.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Pay for your perfect day
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-4 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="sun" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Making energy-efficiency improvements to your home?
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Take out a personal loan for energy-efficient home improvements and you could get cashback.
+                        Terms apply.
+                    </p>
+
+                    <p class="text-gray-300 text-sm font-medium">
+                        6.3% APR Representative on loans of £7,500–£15,000 over 2–5 years.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Greener Home Loan
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-20">
+
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Title -->
+            <h2 class="text-center text-3xl md:text-4xl font-semibold text-white mb-16">
+                Borrowing to suit you
+            </h2>
+
+
+            <!-- Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+
+                <!-- Card 1 -->
+                <div class="space-y-5">
+
+                    <img src="./assets/images/new-barclaycard-1.jpeg" class="rounded-xl w-full h-56 object-cover">
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Barclaycard
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Choose the card that could be right for you – you could find a card to meet your needs.
+                    </p>
+
+                    <p class="text-gray-300 font-medium">
+                        Subject to application, financial circumstances and borrowing history
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Explore our cards
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card 2 -->
+                <div class="space-y-5">
+
+                    <img src="./assets/images/top-up-loans-image.jpeg" class="rounded-xl w-full h-56 object-cover">
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Top-up loan
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Need to borrow a little more? You might be able to top up or get an extra loan.
+                    </p>
+
+                    <p class="text-gray-300 font-medium">
+                        All loans are subject to your financial circumstances and borrowing history at the time you
+                        apply.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Top up your borrowing
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card 3 -->
+                <div class="space-y-5">
+
+                    <img src="./assets/images/ways-to-borrow-image.jpeg" class="rounded-xl w-full h-56 object-cover">
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Other ways to borrow
+                    </h3>
+
+                    <p class="text-gray-400">
+                        There might be other ways to borrow that are better for you than a loan, depending on your
+                        needs.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Borrowing options
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#2a2f4a] py-20">
+
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Header -->
+            <div class="text-center mb-16">
+
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
+                    Looking for some help?
+                </h2>
+
+                <p class="text-gray-400 max-w-3xl mx-auto">
+                    Whether you're wondering if you can get a loan or how to get out of debt, our guides are here to
+                    help.
+                </p>
+
+            </div>
+
+
+            <!-- Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-5 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="book-open" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        What is a credit rating?
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Find out what a credit rating is, why it's so important, and how you can improve yours.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        About credit ratings
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-5 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="receipt" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Worried about money?
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Get practical support to help you tackle your money problems and change the way you spend.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Manage your money
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-5 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="briefcase" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Barclays Money Mentors
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Borrowing to pay for those little extras or something special? Barclays Money Mentors can guide
+                        you.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Explore Money Mentors
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+
+                </div>
+
+
+                <!-- Card -->
+                <div class="bg-[#0f1b36] p-8 rounded-xl space-y-5 hover:translate-y-[-4px] transition">
+
+                    <i data-lucide="search" class="w-10 h-10 text-blue-400"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        What's an APR?
+                    </h3>
+
+                    <p class="text-gray-400">
+                        We explain what APR means and clear up the difference between representative and personal APR.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        APR explained
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-20">
+
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Header -->
+            <div class="text-center mb-16">
+
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
+                    Get help or contact us
+                </h2>
+
+                <p class="text-gray-400 max-w-2xl mx-auto">
+                    Choose the best option to suit your needs. Or explore other ways to
+                    <a href="#" class="text-blue-400 underline">get help</a>.
+                </p>
+
+            </div>
+
+
+            <!-- Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+
+                <!-- Card 1 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl space-y-5">
+
+                    <i data-lucide="message-square" class="w-10 h-10 text-white"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Send us a message
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Check to see if you're eligible to apply for a loan in Online Banking or your app now.
+                    </p>
+
+                    <p class="text-gray-400">
+                        Please note that we might not have all the information we need to show you a provisional loan
+                        limit.
+                    </p>
+
+                </div>
+
+
+                <!-- Card 2 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl space-y-5">
+
+                    <i data-lucide="smartphone" class="w-10 h-10 text-white"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Call us
+                    </h3>
+
+                    <p class="text-gray-400">
+                        If you have any questions, you can speak to a lending specialist on
+                        <span class="text-white font-medium">0345 734 5345</span>.
+                    </p>
+
+                    <p class="text-gray-400">
+                        We're here Monday to Saturday from 8am to 9pm, and bank holidays from 8am to 6pm.
+                    </p>
+
+                    <a href="#" class="text-blue-400 underline text-sm">
+                        Call charges
+                    </a>
+
+                </div>
+
+
+                <!-- Card 3 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl space-y-5">
+
+                    <i data-lucide="map-pin" class="w-10 h-10 text-white"></i>
+
+                    <h3 class="text-white text-xl font-semibold">
+                        Visit us in person
+                    </h3>
+
+                    <p class="text-gray-400">
+                        We're on hand if you'd like to discuss your options in person. You can find your nearest branch
+                        and opening times here.
+                    </p>
+
+                    <a href="#" class="flex items-center gap-2 text-blue-400 hover:gap-3 transition">
+                        Find your Barclays Local
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1b2545] py-10">
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+
+            <!-- Left Content -->
+            <div>
+
+                <h2 class="text-2xl font-semibold text-white mb-4">
+                    Open a Barclays Bank Account
+                </h2>
+
+                <h3 class="text-lg text-white mb-6">
+                    Scan the QR code using your phone camera to get started
+                </h3>
+
+                <p class="text-gray-300 mb-8">
+                    Scan the QR code with your phone or tablet, or tap the App Store or Google Play buttons below to
+                    download the app and begin your application. T&Cs and eligibility apply. 18+ and UK only.
+                </p>
+
+                <div class="flex gap-4 flex-wrap">
+
+                    <img src="./assets/images/apple-appstore.png" class="h-12">
+
+                    <img src="./assets/images/google-play.png" class="h-12">
+
+                </div>
+
+            </div>
+            <!-- QR Code -->
+            <div class="flex justify-center lg:justify-end">
+
+                <div class="bg-white p-6 rounded-2xl">
+                    <img src="./assets/images/qr.png" class="w-56 h-56 object-contain">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Feedback Section -->
+    <section class="bg-[#0f1b36] py-16 text-center">
+        <h3 class="text-white text-xl font-semibold mb-3" data-aos="fade-up">
+            Was this helpful?
+        </h3>
+
+        <p class="text-gray-400 mb-8" data-aos="fade-up">
+            Your feedback helps us improve your experience.
+        </p>
+
+        <div class="flex justify-center gap-6" data-aos="fade-up">
+
+            <button
+                class="flex items-center gap-2 border border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                Yes
+                <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+            </button>
+
+            <button
+                class="flex items-center gap-2 border border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                No
+                <i data-lucide="thumbs-down" class="w-4 h-4"></i>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- Return to top -->
+    <div class="bg-gray-300 text-center py-4">
+        <a href="#" class="text-gray-700 underline" data-aos="fade-up">
+            Return to top
+        </a>
+
+    </div>
+
+
+    <!-- Bottom Fixed CTA -->
+    <div class="fixed bottom-0 left-0 w-full bg-[#0f1b36] py-4 flex justify-center z-50">
+        <a href="#"
+            class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-400 text-black font-semibold text-md hover:scale-105 transition-all duration-300 shadow-lg">
+            Apply for a bank account
+        </a>
+    </div>
+
+    <footer class="bg-[#292B32] border-t border-gray-700 pt-16 pb-12 px-4 lg:px-20">
+        <div class="max-w-[1200px] mx-auto">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Our products</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Current accounts</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Savings</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Loans</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Mortgages</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Insurance</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Credit cards</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Help</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Help & FAQs</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Money worries</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report fraud or a scam</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report card lost or stolen</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Access to cash</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Site information</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Important information</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Accessibility</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Privacy policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Cookie policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Security</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Find us</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Find Barclays</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Service status</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 mb-8">
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <span class="font-bold text-sm">Download the Barclays app</span>
+                    <div class="flex gap-3">
+                        <a href="#"><img src="./assets/images/apple-appstore.png" alt="App Store" class="h-10"></a>
+                        <a href="#"><img src="./assets/images/google-play.png" alt="Google Play" class="h-10"></a>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-white p-2 rounded-full text-black hover:bg-[#00AEEF] transition"><i
+                            data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+
+            <div class="text-[13px] text-gray-400 space-y-4 mb-12 max-w-5xl">
+                <p>Barclays Bank UK PLC and Barclays Bank PLC are each authorised by the Prudential Regulation
+                    Authority
+                    and regulated by the Financial Conduct Authority and the Prudential Regulation Authority.</p>
+                <p>Barclays Investment Solutions Limited is authorised and regulated by the Financial Conduct
+                    Authority.
+                </p>
+                <p>Registered office for all: 1 Churchill Place, London E14 5HP</p>
+            </div>
+
+            <div class="flex flex-wrap gap-6 items-center">
+                <div class="bg-white p-2 rounded h-16 w-16 flex items-center justify-center">
+                    <span
+                        class="text-[10px] text-purple-900 font-bold text-center leading-none">fscs<br>PROTECTED</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <div class="w-8 h-8 bg-blue-600 flex items-center justify-center rounded-sm">
+                        <i data-lucide="check" class="text-white w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] leading-tight font-bold">CYBER<br>ESSENTIALS<br>CERTIFIED PLUS</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>Secure Digital Banking<br>KITEMARK™
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="lock" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>ISO/IEC 27001 Information Security
+                        Management<br>CERTIFIED
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- MODAL -->
+    <div id="loanModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
+        <!-- Modal Content -->
+        <div class="bg-[#e5e5e5] w-full max-w-4xl rounded-xl p-6 relative">
+            <!-- Close Button -->
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-600 text-xl">
+                ✕
+            </button>
+            <!-- Calculator UI -->
+            <div class="space-y-6">
+                <!-- Amount -->
+                <div class="bg-[#0b3f5c] p-4 rounded-lg flex items-center gap-4">
+                    <span class="text-white w-24">Amount</span>
+                    <button onclick="changeAmount(-500)" class="bg-gray-400 px-4 py-2 rounded">−</button>
+                    <input id="amount" type="text" class="flex-1 px-4 py-2 rounded text-center text-gray-400" value="11000">
+                    <button onclick="changeAmount(500)" class="bg-gray-400 px-4 py-2 rounded">+</button>
+                </div>
+
+                <!-- Term -->
+                <div class="bg-[#0b3f5c] p-4 rounded-lg flex items-center gap-4">
+                    <span class="text-white w-24">Term</span>
+                    <button onclick="changeTerm(-1)" class="bg-gray-400 px-4 py-2 rounded">−</button>
+                    <input id="term" type="text" class="flex-1 px-4 py-2 rounded text-center text-gray-400" value="24">
+                    <button onclick="changeTerm(1)" class="bg-gray-400 px-4 py-2 rounded">+</button>
+                </div>
+
+                <!-- Results -->
+                <div class="grid md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-white p-4 rounded border">
+                        <p class="text-lg text-blue-300">Monthly repayment</p>
+                        <p id="monthly" class="text-2xl font-semibold text-blue-600">£488.15</p>
+                        <p class="text-lg text-gray-400">The same every month</p>
+                    </div>
+                    <div class="bg-white p-4 rounded border">
+                        <p class="text-lg text-blue-300">Total payable</p>
+                        <p id="total" class="text-2xl font-semibold text-blue-600">£11,715.60</p>
+                        <p class="text-lg text-gray-400">Loan required</p>
+                    </div>
+                    <div class="bg-white p-4 rounded border">
+                        <p class="text-lg text-blue-300">APR</p>
+                        <p class="text-2xl font-semibold text-blue-600">6.3%</p>
+                        <p class="text-lg text-gray-400">Based on the details you entered</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize Lucide
+        lucide.createIcons();
+        // Initialize AOS
+        AOS.init({ duration: 800, once: true, easing: 'ease-in-out' });
+    </script>
+    <script>
+        lucide.createIcons();
+
+        // 1. Mobile Menu Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenu = document.getElementById('close-menu');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('menu-overlay');
+
+        function toggleMenu() {
+            drawer.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+            setTimeout(() => overlay.classList.toggle('opacity-100'), 10);
+            document.body.style.overflow = drawer.classList.contains('translate-x-full') ? '' : 'hidden';
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenu.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // 2. Search Bar Logic
+        const searchTrigger = document.getElementById('search-trigger');
+        const searchBar = document.getElementById('search-bar');
+        const closeSearch = document.getElementById('close-search');
+
+        searchTrigger.addEventListener('click', () => {
+            searchBar.classList.remove('-translate-y-full');
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchBar.classList.add('-translate-y-full');
+        });
+    </script>
+    <script>
+        const modal = document.getElementById("loanModal");
+
+        document.getElementById("openModal").onclick = () => {
+            modal.classList.remove("hidden");
+        };
+
+        document.getElementById("closeModal").onclick = () => {
+            modal.classList.add("hidden");
+        };
+
+        // Close on background click
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) modal.classList.add("hidden");
+        });
+
+        // Calculator logic
+        function calculate() {
+            let amount = parseFloat(document.getElementById("amount").value);
+            let term = parseFloat(document.getElementById("term").value);
+
+            let rate = 0.063 / 12; // monthly interest
+            let monthly = (amount * rate) / (1 - Math.pow(1 + rate, -term));
+
+            let total = monthly * term;
+
+            document.getElementById("monthly").innerText = "£" + monthly.toFixed(2);
+            document.getElementById("total").innerText = "£" + total.toFixed(2);
+        }
+
+        function changeAmount(val) {
+            let input = document.getElementById("amount");
+            input.value = parseInt(input.value) + val;
+            calculate();
+        }
+
+        function changeTerm(val) {
+            let input = document.getElementById("term");
+            input.value = parseInt(input.value) + val;
+            calculate();
+        }
+
+        // initial calc
+        calculate();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barclays Clone - Online Banking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        const root = document.documentElement;
+
+        root.style.setProperty('--primary-color', '#002D56');
+        root.style.setProperty('--primary-color-dark', '#001D3D');
+        root.style.setProperty('--primary-color-light', '#004A8F');
+
+        root.style.setProperty('--secondary-color', '#00AEEF');
+        root.style.setProperty('--secondary-color-dark', '#008CBE');
+        root.style.setProperty('--secondary-color-light', '#B3E8FB');
+
+        root.style.setProperty('--text-color', '#ffffff');
+        root.style.setProperty('--bg-color', '#121921');
+        root.style.setProperty('--card-bg-color', '#1a232e');
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: 'var(--primary-color)',
+                            dark: 'var(--primary-color-dark)',
+                            light: 'var(--primary-color-light)',
+                        },
+                        secondary: {
+                            DEFAULT: 'var(--secondary-color)',
+                            dark: 'var(--secondary-color-dark)',
+                            light: 'var(--secondary-color-light)',
+                        },
+                        'app-bg': 'var(--bg-color)',
+                        'card-navy': 'var(--card-bg-color)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-[#121921] text-white font-sans overflow-x-hidden">
+
+    <div id="search-bar"
+        class="fixed top-0 left-0 w-full bg-[#001D3D] border-b border-blue-900 p-4 z-[100] transform -translate-y-full transition-transform duration-300 ease-in-out">
+        <div
+            class="max-w-4xl mx-auto flex items-center bg-[#121921] rounded-full px-4 py-2 border border-blue-800 focus-within:border-[#00AEEF]">
+            <i data-lucide="search" class="text-gray-400 w-5 h-5 mr-3"></i>
+            <input type="text" placeholder="What are you looking for?"
+                class="bg-transparent w-full outline-none text-white text-sm">
+            <button id="close-search" class="text-gray-400 hover:text-white"><i data-lucide="x"
+                    class="w-5 h-5"></i></button>
+        </div>
+    </div>
+
+    <div id="menu-overlay"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
+    </div>
+    <div id="mobile-drawer"
+        class="fixed top-0 right-0 h-full w-[80%] max-w-sm bg-[#002D56] z-[70] transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl p-6">
+        <div class="flex justify-between items-center mb-8">
+            <span class="text-[#00AEEF] font-bold">MENU</span>
+            <button id="close-menu" class="text-white"><i data-lucide="x"></i></button>
+        </div>
+        <nav class="flex flex-col space-y-6 font-bold">
+            <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+            <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+            <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+            <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+            <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+            <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+            <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+            <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+            <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+        </nav>
+    </div>
+
+    <nav class="bg-[#002D56] border-b border-blue-900 px-4 py-3 lg:px-20 relative z-50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center space-x-2 text-2xl font-bold tracking-tighter text-[#00AEEF]">
+                    <i data-lucide="bird"></i>
+                    <span>BARCLAYS</span>
+                </div>
+                <div class="hidden lg:flex space-x-6 text-sm font-medium">
+                    <a href="#" class="border-b-2 border-[#00AEEF] pb-1">Personal</a>
+                    <a href="#" class="hover:text-blue-300">Business</a>
+                    <a href="#" class="hover:text-blue-300">Corporate</a>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <button id="search-trigger" class="hidden md:flex items-center text-sm">
+                    <i data-lucide="search" class="w-4 h-4 mr-2"></i>Search
+                </button>
+                <button
+                    class="bg-[#00AEEF] text-[#002D56] px-6 py-2 rounded-full font-bold text-sm hover:bg-white transition">
+                    Log in
+                </button>
+                <button class="lg:hidden" id="menu-btn"><i data-lucide="menu"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hidden lg:flex bg-[#002D56] px-20 py-4 space-x-8 text-sm border-t border-blue-800 font-bold sticky top-0 z-50">
+        <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+        <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+        <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+        <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+        <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+        <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+        <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+        <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+        <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+    </div>
+
+    <section class="max-w-[1200px] mx-auto px-8 py-16 bg-blue-500">
+        <div class="relative overflow-hidden rounded-3xl shadow-2xl bg-gradient-to-br from-[#003d73] to-[#001D3D] group"
+            data-aos="fade-up">
+
+            <div
+                class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                <i data-lucide="bird" class="w-80 h-80 text-white"></i>
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center">
+                <div class="md:w-3/5 p-10 md:p-16">
+                    <h4 class="text-sm md:text-sm text-white mb-6 leading-tight">
+                        CREDIT CARDS
+                    </h4>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
+                        Choice is the key to finding the right credit card
+                    </h2>
+                    <p class="text-blue-100 text-lg mb-10 max-w-lg leading-relaxed">
+                        Follow the steps below to apply online, or visit the home of Barclaycard to see what we offer.
+                    </p>
+
+                </div>
+
+                <div class="md:w-2/5 w-full h-64 md:h-auto self-stretch">
+                    <img src="./assets/images/Man_paying_with_card_on_pc_3_1.large.medium_quality.jpg"
+                        alt="Step-by-step guide" class="w-full h-full object-cover md:rounded-l-3xl shadow-inner">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-24">
+
+        <div class="max-w-4xl mx-auto px-6 text-center">
+
+            <!-- Heading -->
+            <h2 class="text-3xl md:text-4xl font-semibold text-white mb-6">
+                Check to see if you're eligible
+            </h2>
+
+            <!-- Description -->
+            <p class="text-gray-400 leading-relaxed mb-10">
+                Before you apply, find out how likely you are to be accepted for a Barclaycard with our free,
+                easy-to-use tool. Just so you know – your credit rating won’t be affected, and you’re not
+                obliged to apply for a card afterwards.
+            </p>
+
+            <!-- Button -->
+            <a href="#" class="inline-block bg-blue-600 hover:bg-blue-500 text-white 
+              px-8 py-3 rounded-full font-medium 
+              transition duration-300 shadow-lg">
+                Eligibility checker
+            </a>
+        </div>
+    </section>
+
+    <section class="bg-[#f2f2f2] py-20">
+
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                <!-- Card 1 -->
+                <div class="bg-[#e9e9e9] p-8 rounded-lg flex flex-col justify-between">
+
+                    <div>
+                        <h3 class="text-xl font-semibold text-[#0f3b5f] mb-4">
+                            Rewards credit cards
+                        </h3>
+
+                        <p class="text-gray-700 mb-6">
+                            Get rewarded for your everyday spending. Collect rewards to use on Amazon, travel rewards
+                            with Avios, or cashback.
+                        </p>
+
+                        <p class="text-gray-800 font-medium mb-2">
+                            80.1% APR Representative (variable)
+                        </p>
+
+                        <p class="text-gray-600 text-sm">
+                            Subject to application, financial circumstances and borrowing history. T&Cs apply.
+                        </p>
+                    </div>
+
+                    <a href="#"
+                        class="mt-8 inline-block bg-blue-600 text-white px-6 py-3 rounded-full text-center hover:bg-blue-500 transition">
+                        Rewards credit cards
+                    </a>
+
+                </div>
+
+
+                <!-- Card 2 -->
+                <div class="bg-[#e9e9e9] p-8 rounded-lg flex flex-col justify-between">
+
+                    <div>
+                        <h3 class="text-xl font-semibold text-[#0f3b5f] mb-4">
+                            Purchase offer credit cards
+                        </h3>
+
+                        <p class="text-gray-700 mb-6">
+                            Make purchases without paying interest for a certain period. Spread the cost over time.
+                        </p>
+
+                        <p class="text-gray-800 font-medium mb-2">
+                            28.9% APR Representative (variable)
+                        </p>
+
+                        <p class="text-gray-600 text-sm">
+                            Subject to application, financial circumstances and borrowing history. T&Cs apply.
+                        </p>
+                    </div>
+
+                    <a href="#"
+                        class="mt-8 inline-block bg-blue-600 text-white px-6 py-3 rounded-full text-center hover:bg-blue-500 transition">
+                        Purchase offer cards
+                    </a>
+
+                </div>
+
+
+                <!-- Card 3 -->
+                <div class="bg-[#e9e9e9] p-8 rounded-lg flex flex-col justify-between">
+
+                    <div>
+                        <h3 class="text-xl font-semibold text-[#0f3b5f] mb-4">
+                            Credit building credit cards
+                        </h3>
+
+                        <p class="text-gray-700 mb-6">
+                            If you're looking to improve your credit score or start building one from scratch, our cards
+                            could help.
+                        </p>
+
+                        <p class="text-gray-800 font-medium mb-2">
+                            33.9% APR Representative (variable)
+                        </p>
+
+                        <p class="text-gray-600 text-sm">
+                            Subject to application, financial circumstances and borrowing history. T&Cs apply.
+                        </p>
+                    </div>
+
+                    <a href="#"
+                        class="mt-8 inline-block bg-blue-600 text-white px-6 py-3 rounded-full text-center hover:bg-blue-500 transition">
+                        Credit building cards
+                    </a>
+
+                </div>
+
+
+                <!-- Card 4 -->
+                <div class="bg-[#e9e9e9] p-8 rounded-lg flex flex-col justify-between">
+
+                    <div>
+                        <h3 class="text-xl font-semibold text-[#0f3b5f] mb-4">
+                            Balance transfer credit cards
+                        </h3>
+
+                        <p class="text-gray-700 mb-6">
+                            Consolidate what you owe and potentially reduce interest by transferring balances.
+                        </p>
+                    </div>
+
+                    <a href="#"
+                        class="mt-8 inline-block bg-blue-600 text-white px-6 py-3 rounded-full text-center hover:bg-blue-500 transition">
+                        Balance transfer cards
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#f5f7f9] py-24">
+        <div class="max-w-6xl mx-auto px-6">
+            <!-- Header -->
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-semibold text-[#0f3b5f] mb-4">
+                    Compare our credit cards
+                </h2>
+
+                <p class="text-gray-600 max-w-2xl mx-auto mb-8">
+                    Whether you're new to credit, want to manage your money better or you're looking for rewards, we've
+                    got a range of cards that could help.
+                </p>
+
+                <button
+                    class="border border-blue-600 text-blue-600 px-6 py-2 rounded-full hover:bg-blue-600 hover:text-white transition">
+                    Show filters
+                </button>
+            </div>
+
+
+            <!-- Content -->
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Left: Card -->
+                <div class="text-center md:text-left">
+                    <img src="./assets/images/ccard_platinum_16_9.xsmall.medium_quality.png" alt="Card"
+                        class="w-64 mx-auto md:mx-0 mb-6">
+
+                    <h4 class="text-[#0f3b5f] font-medium mb-6">
+                        Representative example
+                    </h4>
+
+                    <div class="text-gray-700 space-y-2 text-sm">
+
+                        <div class="flex justify-between max-w-xs mx-auto md:mx-0">
+                            <span>Representative</span>
+                            <span class="text-[#0f3b5f] font-medium">24.9% APR (variable)</span>
+                        </div>
+
+                        <div class="flex justify-between max-w-xs mx-auto md:mx-0">
+                            <span>Purchase rate p.a.</span>
+                            <span class="text-[#0f3b5f] font-medium">24.9% (variable)</span>
+                        </div>
+
+                        <div class="flex justify-between max-w-xs mx-auto md:mx-0">
+                            <span>Based on credit limit of</span>
+                            <span class="text-[#0f3b5f] font-medium">£1,200</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Right: Content -->
+                <div>
+
+                    <h3 class="text-2xl font-semibold text-[#0f3b5f] mb-6 leading-snug">
+                        Barclaycard up to 24 month balance transfer and up to 21 month purchase Platinum card
+                    </h3>
+
+                    <ul class="space-y-4 text-gray-700 mb-6">
+
+                        <li class="flex gap-3">
+                            <span class="text-blue-600 mt-1">•</span>
+                            <span>
+                                Apply in the Barclays app before 30 March 2026. Spend £1,000 within 90 days to get
+                                cashback.
+                                <a href="#" class="text-blue-600 underline">T&Cs apply</a>
+                            </span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <span class="text-blue-600 mt-1">•</span>
+                            <span>
+                                0% interest on balance transfers for up to 24 months (3.45% fee applies).
+                            </span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <span class="text-blue-600 mt-1">•</span>
+                            <span>
+                                0% interest on purchases for up to 21 months after opening your account.
+                            </span>
+                        </li>
+
+                    </ul>
+
+                    <p class="text-gray-500 text-sm mb-6">
+                        The approval of your application depends on financial circumstances and borrowing history.
+                        Terms may vary.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-500 transition">
+                        See card details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#f5f7f9] py-20">
+
+        <div class="max-w-6xl mx-auto px-6 space-y-20">
+
+            <!-- CARD ITEM -->
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+
+                <!-- Left -->
+                <div class="text-center md:text-left">
+                    <img src="./assets/images/ccard_platinum_16_9.xsmall.medium_quality (1).png"
+                        class="w-64 mx-auto md:mx-0 mb-6" />
+
+                    <h4 class="text-[#0f3b5f] font-medium mb-4">
+                        Representative example
+                    </h4>
+
+                    <div class="space-y-2 text-sm text-gray-700 max-w-xs mx-auto md:mx-0">
+
+                        <div class="flex justify-between">
+                            <span>Representative</span>
+                            <span class="text-[#0f3b5f] font-medium">28.9% APR</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Purchase rate p.a.</span>
+                            <span class="text-[#0f3b5f] font-medium">28.9%</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Credit limit</span>
+                            <span class="text-[#0f3b5f] font-medium">£1,200</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Monthly fee</span>
+                            <span class="text-[#0f3b5f] font-medium">£0</span>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Right -->
+                <div>
+
+                    <h3 class="text-2xl font-semibold text-[#0f3b5f] mb-6">
+                        The Amazon Barclaycard
+                    </h3>
+
+                    <ul class="space-y-4 text-gray-700 mb-6">
+
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>Get Amazon gift rewards when approved and activated.</span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>Earn rewards on Amazon purchases and everyday spending.</span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>0% interest on purchases for first 6 months.</span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>Managed via Barclays mobile app.</span>
+                        </li>
+
+                    </ul>
+
+                    <p class="text-gray-500 text-sm mb-6">
+                        Approval depends on financial circumstances and borrowing history.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-500 transition">
+                        See card details
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Divider -->
+            <div class="border-t border-gray-300"></div>
+
+
+            <!-- SECOND CARD -->
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+
+                <!-- Left -->
+                <div class="text-center md:text-left">
+                    <img src="./assets/images/amazon-for-barclays-16_9.xsmall.medium_quality.png"
+                        class="w-64 mx-auto md:mx-0 mb-6" />
+
+                    <h4 class="text-[#0f3b5f] font-medium mb-4">
+                        Representative example
+                    </h4>
+
+                    <div class="space-y-2 text-sm text-gray-700 max-w-xs mx-auto md:mx-0">
+                        <div class="flex justify-between">
+                            <span>Representative</span>
+                            <span class="text-[#0f3b5f] font-medium">80.1% APR</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Purchase rate</span>
+                            <span class="text-[#0f3b5f] font-medium">29.9%</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Limit</span>
+                            <span class="text-[#0f3b5f] font-medium">£1,200</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Monthly fee</span>
+                            <span class="text-[#0f3b5f] font-medium">£20</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Right -->
+                <div>
+
+                    <h3 class="text-2xl font-semibold text-[#0f3b5f] mb-6">
+                        Barclaycard Avios Plus
+                    </h3>
+
+                    <ul class="space-y-4 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>Earn Avios on every purchase.</span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>Bonus Avios when you hit spending targets.</span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>Airport lounge access benefits.</span>
+                        </li>
+                    </ul>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-500 transition">
+                        See card details
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Divider -->
+            <div class="border-t border-gray-300"></div>
+
+
+            <!-- THIRD CARD -->
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+
+                <!-- Left -->
+                <div class="text-center md:text-left">
+                    <img src="./assets/images/barclaycard_avios_plus_16_9.xsmall.medium_quality.png"
+                        class="w-64 mx-auto md:mx-0 mb-6" />
+
+                    <h4 class="text-[#0f3b5f] font-medium mb-4">
+                        Representative example
+                    </h4>
+
+                    <div class="space-y-2 text-sm text-gray-700 max-w-xs mx-auto md:mx-0">
+                        <div class="flex justify-between">
+                            <span>Representative</span>
+                            <span class="text-[#0f3b5f] font-medium">29.9% APR</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Purchase rate</span>
+                            <span class="text-[#0f3b5f] font-medium">29.9%</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Limit</span>
+                            <span class="text-[#0f3b5f] font-medium">£1,200</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Monthly fee</span>
+                            <span class="text-[#0f3b5f] font-medium">£0</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Right -->
+                <div>
+
+                    <h3 class="text-2xl font-semibold text-[#0f3b5f] mb-6">
+                        Barclaycard Avios
+                    </h3>
+
+                    <ul class="space-y-4 text-gray-700 mb-6">
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>Earn Avios on everyday spending.</span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>No monthly fee.</span>
+                        </li>
+
+                        <li class="flex gap-3">
+                            <i data-lucide="check" class="w-4 h-4 text-blue-600 mt-1"></i>
+                            <span>Upgrade rewards available.</span>
+                        </li>
+                    </ul>
+
+                    <a href="#"
+                        class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-500 transition">
+                        See card details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-20">
+
+        <div class="max-w-6xl mx-auto px-6">
+
+            <div class="grid md:grid-cols-2 gap-10 items-center">
+
+                <!-- Image -->
+                <div>
+                    <img src="./assets/images/cake_16_9.small.medium_quality.jpg" class="rounded-xl w-full object-cover shadow-lg" />
+                </div>
+
+
+                <!-- Content -->
+                <div>
+
+                    <h2 class="text-2xl md:text-3xl font-semibold text-white mb-6">
+                        More value with the Barclays app
+                    </h2>
+
+                    <p class="text-gray-400 mb-8 leading-relaxed">
+                        If you already have the Barclays app, you can also use it to manage your Barclaycard account.
+                        Or download it free from your usual app store to enjoy these benefits.
+                    </p>
+
+
+                    <!-- Features -->
+                    <div class="space-y-6 mb-8">
+
+                        <div class="flex gap-3">
+                            <i data-lucide="check-circle" class="text-green-400 w-5 h-5 mt-1"></i>
+                            <div>
+                                <p class="text-white font-medium">A safe and easy way to log in</p>
+                                <p class="text-gray-400 text-sm">
+                                    Use facial recognition, your fingerprint or a passcode.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <i data-lucide="check-circle" class="text-green-400 w-5 h-5 mt-1"></i>
+                            <div>
+                                <p class="text-white font-medium">Manage all your accounts</p>
+                                <p class="text-gray-400 text-sm">
+                                    Manage your current and Barclaycard accounts in one place.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <i data-lucide="check-circle" class="text-green-400 w-5 h-5 mt-1"></i>
+                            <div>
+                                <p class="text-white font-medium">Shop online safely</p>
+                                <p class="text-gray-400 text-sm">
+                                    Authorise payments for online purchases in just a few steps.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Note -->
+                    <p class="text-gray-500 text-sm mb-8">
+                        Apple Pay may not be available for some cards. Google Pay and contactless payments are supported
+                        on compatible devices.
+                    </p>
+
+
+                    <!-- Button -->
+                    <a href="#"
+                        class="inline-block bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full transition shadow-lg">
+                        Get the app
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Footer text -->
+            <p class="text-center text-gray-500 text-sm mt-16 max-w-3xl mx-auto">
+                You must have a Barclays or Barclaycard account, have a mobile number and be aged 16 or over to use the
+                Barclays app.
+                Terms and conditions apply.
+            </p>
+        </div>
+    </section>
+
+    <section class="bg-[#1b2545] py-10">
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+            <!-- Left Content -->
+            <div>
+
+                <h2 class="text-2xl font-semibold text-white mb-4">
+                    Open a Barclays Bank Account
+                </h2>
+
+                <h3 class="text-lg text-white mb-6">
+                    Scan the QR code using your phone camera to get started
+                </h3>
+
+                <p class="text-gray-300 mb-8">
+                    Scan the QR code with your phone or tablet, or tap the App Store or Google Play buttons below to
+                    download the app and begin your application. T&Cs and eligibility apply. 18+ and UK only.
+                </p>
+
+                <div class="flex gap-4 flex-wrap">
+
+                    <img src="./assets/images/apple-appstore.png" class="h-12">
+
+                    <img src="./assets/images/google-play.png" class="h-12">
+
+                </div>
+
+            </div>
+            <!-- QR Code -->
+            <div class="flex justify-center lg:justify-end">
+
+                <div class="bg-white p-6 rounded-2xl">
+                    <img src="./assets/images/qr.png" class="w-56 h-56 object-contain">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Feedback Section -->
+    <section class="bg-[#0f1b36] py-16 text-center">
+        <h3 class="text-white text-xl font-semibold mb-3" data-aos="fade-up">
+            Was this helpful?
+        </h3>
+
+        <p class="text-gray-400 mb-8" data-aos="fade-up">
+            Your feedback helps us improve your experience.
+        </p>
+
+        <div class="flex justify-center gap-6" data-aos="fade-up">
+
+            <button
+                class="flex items-center gap-2 border border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                Yes
+                <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+            </button>
+
+            <button
+                class="flex items-center gap-2 border border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                No
+                <i data-lucide="thumbs-down" class="w-4 h-4"></i>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- Return to top -->
+    <div class="bg-gray-300 text-center py-4">
+        <a href="#" class="text-gray-700 underline" data-aos="fade-up">
+            Return to top
+        </a>
+
+    </div>
+
+
+    <!-- Bottom Fixed CTA -->
+    <div class="fixed bottom-0 left-0 w-full bg-[#0f1b36] py-4 flex justify-center z-50">
+        <a href="#"
+            class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-400 text-black font-semibold text-md hover:scale-105 transition-all duration-300 shadow-lg">
+            Apply for a bank account
+        </a>
+    </div>
+
+    <footer class="bg-[#292B32] border-t border-gray-700 pt-16 pb-12 px-4 lg:px-20">
+        <div class="max-w-[1200px] mx-auto">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Our products</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Current accounts</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Savings</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Loans</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Mortgages</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Insurance</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Credit cards</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Help</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Help & FAQs</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Money worries</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report fraud or a scam</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report card lost or stolen</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Access to cash</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Site information</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Important information</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Accessibility</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Privacy policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Cookie policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Security</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Find us</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Find Barclays</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Service status</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 mb-8">
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <span class="font-bold text-sm">Download the Barclays app</span>
+                    <div class="flex gap-3">
+                        <a href="#"><img
+                                src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+                                alt="App Store" class="h-10"></a>
+                        <a href="#"><img
+                                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                                alt="Google Play" class="h-10"></a>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-white p-2 rounded-full text-black hover:bg-[#00AEEF] transition"><i
+                            data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+
+            <div class="text-[13px] text-gray-400 space-y-4 mb-12 max-w-5xl">
+                <p>Barclays Bank UK PLC and Barclays Bank PLC are each authorised by the Prudential Regulation
+                    Authority
+                    and regulated by the Financial Conduct Authority and the Prudential Regulation Authority.</p>
+                <p>Barclays Investment Solutions Limited is authorised and regulated by the Financial Conduct
+                    Authority.
+                </p>
+                <p>Registered office for all: 1 Churchill Place, London E14 5HP</p>
+            </div>
+
+            <div class="flex flex-wrap gap-6 items-center">
+                <div class="bg-white p-2 rounded h-16 w-16 flex items-center justify-center">
+                    <span
+                        class="text-[10px] text-purple-900 font-bold text-center leading-none">fscs<br>PROTECTED</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <div class="w-8 h-8 bg-blue-600 flex items-center justify-center rounded-sm">
+                        <i data-lucide="check" class="text-white w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] leading-tight font-bold">CYBER<br>ESSENTIALS<br>CERTIFIED PLUS</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>Secure Digital Banking<br>KITEMARK™
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="lock" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>ISO/IEC 27001 Information Security
+                        Management<br>CERTIFIED
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize Lucide
+        lucide.createIcons();
+        // Initialize AOS
+        AOS.init({ duration: 800, once: true, easing: 'ease-in-out' });
+    </script>
+    <script>
+        lucide.createIcons();
+
+        // 1. Mobile Menu Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenu = document.getElementById('close-menu');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('menu-overlay');
+
+        function toggleMenu() {
+            drawer.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+            setTimeout(() => overlay.classList.toggle('opacity-100'), 10);
+            document.body.style.overflow = drawer.classList.contains('translate-x-full') ? '' : 'hidden';
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenu.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // 2. Search Bar Logic
+        const searchTrigger = document.getElementById('search-trigger');
+        const searchBar = document.getElementById('search-bar');
+        const closeSearch = document.getElementById('close-search');
+
+        searchTrigger.addEventListener('click', () => {
+            searchBar.classList.remove('-translate-y-full');
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchBar.classList.add('-translate-y-full');
+        });
+    </script>
+</body>
+
+</html>

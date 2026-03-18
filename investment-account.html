@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barclays Clone - Online Banking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        const root = document.documentElement;
+
+        root.style.setProperty('--primary-color', '#002D56');
+        root.style.setProperty('--primary-color-dark', '#001D3D');
+        root.style.setProperty('--primary-color-light', '#004A8F');
+
+        root.style.setProperty('--secondary-color', '#00AEEF');
+        root.style.setProperty('--secondary-color-dark', '#008CBE');
+        root.style.setProperty('--secondary-color-light', '#B3E8FB');
+
+        root.style.setProperty('--text-color', '#ffffff');
+        root.style.setProperty('--bg-color', '#121921');
+        root.style.setProperty('--card-bg-color', '#1a232e');
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: 'var(--primary-color)',
+                            dark: 'var(--primary-color-dark)',
+                            light: 'var(--primary-color-light)',
+                        },
+                        secondary: {
+                            DEFAULT: 'var(--secondary-color)',
+                            dark: 'var(--secondary-color-dark)',
+                            light: 'var(--secondary-color-light)',
+                        },
+                        'app-bg': 'var(--bg-color)',
+                        'card-navy': 'var(--card-bg-color)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-[#121921] text-white font-sans overflow-x-hidden">
+
+    <div id="search-bar"
+        class="fixed top-0 left-0 w-full bg-[#001D3D] border-b border-blue-900 p-4 z-[100] transform -translate-y-full transition-transform duration-300 ease-in-out">
+        <div
+            class="max-w-4xl mx-auto flex items-center bg-[#121921] rounded-full px-4 py-2 border border-blue-800 focus-within:border-[#00AEEF]">
+            <i data-lucide="search" class="text-gray-400 w-5 h-5 mr-3"></i>
+            <input type="text" placeholder="What are you looking for?"
+                class="bg-transparent w-full outline-none text-white text-sm">
+            <button id="close-search" class="text-gray-400 hover:text-white"><i data-lucide="x"
+                    class="w-5 h-5"></i></button>
+        </div>
+    </div>
+
+    <div id="menu-overlay"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
+    </div>
+    <div id="mobile-drawer"
+        class="fixed top-0 right-0 h-full w-[80%] max-w-sm bg-[#002D56] z-[70] transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl p-6">
+        <div class="flex justify-between items-center mb-8">
+            <span class="text-[#00AEEF] font-bold">MENU</span>
+            <button id="close-menu" class="text-white"><i data-lucide="x"></i></button>
+        </div>
+        <nav class="flex flex-col space-y-6 font-bold">
+            <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+            <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+            <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+            <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+            <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+            <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+            <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+            <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+            <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+        </nav>
+    </div>
+
+    <nav class="bg-[#002D56] border-b border-blue-900 px-4 py-3 lg:px-20 relative z-50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center space-x-2 text-2xl font-bold tracking-tighter text-[#00AEEF]">
+                    <i data-lucide="bird"></i>
+                    <span>BARCLAYS</span>
+                </div>
+                <div class="hidden lg:flex space-x-6 text-sm font-medium">
+                    <a href="#" class="border-b-2 border-[#00AEEF] pb-1">Personal</a>
+                    <a href="#" class="hover:text-blue-300">Business</a>
+                    <a href="#" class="hover:text-blue-300">Corporate</a>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <button id="search-trigger" class="hidden md:flex items-center text-sm">
+                    <i data-lucide="search" class="w-4 h-4 mr-2"></i>Search
+                </button>
+                <button
+                    class="bg-[#00AEEF] text-[#002D56] px-6 py-2 rounded-full font-bold text-sm hover:bg-white transition">
+                    Log in
+                </button>
+                <button class="lg:hidden" id="menu-btn"><i data-lucide="menu"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div
+        class="hidden lg:flex bg-[#002D56] px-20 py-4 space-x-8 text-sm border-t border-blue-800 font-bold sticky top-0 z-50">
+        <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+        <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+        <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+        <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+        <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+        <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+        <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+        <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+        <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+    </div>
+
+    <section class="max-w-[1200px] mx-auto px-8 py-16 bg-blue-500">
+        <div class="relative overflow-hidden rounded-3xl shadow-2xl bg-gradient-to-br from-[#003d73] to-[#001D3D] group"
+            data-aos="fade-up">
+
+            <div
+                class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                <i data-lucide="bird" class="w-80 h-80 text-white"></i>
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center">
+                <div class="md:w-3/5 p-10 md:p-16">
+                    <h4 class="text-sm md:text-sm text-white mb-6 leading-tight">
+                        INVESTMENTS
+                    </h4>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
+                        Investment Account
+                    </h2>
+                    <h2 class="text-2xl md:text-4xl font-bold text-white mb-6 leading-tight">
+                        Low-cost investing with no upper limit
+                    </h2>
+                    <p class="text-blue-100 text-lg mb-10 max-w-lg leading-relaxed">
+                        A great choice for when you’ve used your ISA allowance. Enjoy unlimited investing and you can
+                        start from £50 with our low-cost Investment Account.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button
+                            class="text-white font-bold px-10 py-3 rounded-full border border-[#ffffff] hover:bg-white hover:text-blue-600 transition-all shadow-lg">
+                            Login to apply
+                        </button>
+                        <button
+                            class="text-white font-bold px-10 py-3 rounded-full border border-[#ffffff] hover:bg-white hover:text-blue-600 transition-all shadow-lg">
+                            No Login? Apply here
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="md:w-2/5 w-full h-64 md:h-auto self-stretch">
+                    <img src="./assets/images/women-looking-at-her-investment-account-720x540.jpeg"
+                        alt="Step-by-step guide" class="w-full h-full object-cover md:rounded-l-3xl shadow-inner">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1f2a44] text-white py-20">
+        <div class="max-w-7xl mx-auto px-6" data-aos="fade-up">
+
+            <!-- HEADER -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-semibold mb-4">
+                    What is an Investment Account?
+                </h2>
+
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    An Investment Account offers no upper limit on how much you can invest. This makes it a useful
+                    option if you’ve already used your ISA allowance.
+                    Unlike a Stocks and Shares ISA, any returns or income from your investments will be subject to tax.
+                    You can choose from a range of funds, shares, exchange-traded funds (ETFs), bonds and more.
+                    You can also withdraw your cash at any time.
+                </p>
+            </div>
+
+
+            <!-- CARDS -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+
+                <!-- CARD 1 -->
+                <div class="bg-[#2a3553] p-6 rounded-xl hover:shadow-lg hover:shadow-blue-500/10 transition">
+
+                    <div class="w-14 h-14 flex items-center justify-center bg-yellow-400 text-black rounded-full mb-5">
+                        <i data-lucide="pound-sterling" class="w-6 h-6"></i>
+                    </div>
+
+                    <h3 class="font-semibold text-lg mb-2">
+                        No upper limit
+                    </h3>
+
+                    <p class="text-gray-400 text-sm">
+                        Help grow your money with no upper limit on how much you can invest in an Investment Account.
+                    </p>
+
+                </div>
+
+
+                <!-- CARD 2 -->
+                <div class="bg-[#2a3553] p-6 rounded-xl hover:shadow-lg hover:shadow-blue-500/10 transition">
+
+                    <div class="w-14 h-14 flex items-center justify-center bg-blue-500 rounded-full mb-5">
+                        <i data-lucide="shuffle" class="w-6 h-6 text-white"></i>
+                    </div>
+
+                    <h3 class="font-semibold text-lg mb-2">
+                        Wide investment choice
+                    </h3>
+
+                    <p class="text-gray-400 text-sm">
+                        Choose from over 8,000 investments or select from ready-made options and leave the rest to us.
+                    </p>
+
+                </div>
+
+
+                <!-- CARD 3 -->
+                <div class="bg-[#2a3553] p-6 rounded-xl hover:shadow-lg hover:shadow-blue-500/10 transition">
+
+                    <div class="w-14 h-14 flex items-center justify-center bg-green-500 rounded-full mb-5">
+                        <i data-lucide="banknote" class="w-6 h-6 text-white"></i>
+                    </div>
+
+                    <h3 class="font-semibold text-lg mb-2">
+                        Withdraw anytime
+                    </h3>
+
+                    <p class="text-gray-400 text-sm">
+                        You can sell investments and withdraw your cash at any time. No fees for withdrawing cash.
+                    </p>
+
+                </div>
+
+
+                <!-- CARD 4 -->
+                <div class="bg-[#2a3553] p-6 rounded-xl hover:shadow-lg hover:shadow-blue-500/10 transition">
+
+                    <div class="w-14 h-14 flex items-center justify-center bg-purple-500 rounded-full mb-5">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+                    </div>
+
+                    <h3 class="font-semibold text-lg mb-2">
+                        Protected
+                    </h3>
+
+                    <p class="text-gray-400 text-sm">
+                        We’re committed to protecting your investments and are covered by the Financial Services
+                        Compensation Scheme.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- DISCLAIMER -->
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <p class="text-gray-400 text-sm">
+                    The value of investments can fall as well as rise. You may get back less than you invest.
+                    If you're unsure which investments are right for you, please seek independent advice.
+                    Tax rules can change, and their effects will depend on your individual circumstances.
+                </p>
+            </div>
+
+
+            <!-- BUTTONS -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+
+                <button class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-full text-sm font-medium transition">
+                    Log in to apply
+                </button>
+
+                <button
+                    class="border border-blue-400 text-blue-400 hover:bg-blue-500 hover:text-white px-6 py-3 rounded-full text-sm font-medium transition">
+                    No login? Apply here
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1f2a44] text-white" data-aos="fade-up">
+        <!-- TESTIMONIAL -->
+        <div class="bg-teal-900 py-20 px-6 text-center">
+
+            <div class="max-w-3xl mx-auto">
+
+                <!-- AVATAR -->
+                <img src="./assets/images/pavenpreet-profile-150x150.png"
+                    class="w-24 h-24 rounded-full mx-auto mb-6 object-cover">
+
+                <!-- STARS -->
+                <div class="flex justify-center gap-1 mb-6 text-yellow-400">
+                    <i data-lucide="star" class="w-5 h-5 fill-yellow-400"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-yellow-400"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-yellow-400"></i>
+                    <i data-lucide="star" class="w-5 h-5 fill-yellow-400"></i>
+                    <i data-lucide="star-half" class="w-5 h-5 fill-yellow-400"></i>
+                </div>
+
+                <!-- QUOTE -->
+                <p class="text-lg md:text-xl italic text-teal-100 leading-relaxed mb-6">
+                    “Opening my Investment Account was very straightforward. I’ve invested in some funds and shares –
+                    it’s so easy to do on my phone that I don’t feel I need to put a lot of time aside for it.”
+                </p>
+
+                <!-- NAME -->
+                <p class="text-teal-200 text-sm">
+                    – Pavenpreet, 33, Worcestershire
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- COMPARISON -->
+        <div class="py-20 px-6">
+
+            <div class="max-w-6xl mx-auto text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-semibold">
+                    Investment Account VS Stocks and Shares ISA
+                </h2>
+            </div>
+
+
+            <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
+
+                <!-- CARD 1 -->
+                <div class="bg-[#2a3553] p-6 rounded-xl">
+
+                    <h3 class="text-lg font-semibold mb-4">
+                        Investment Account
+                    </h3>
+
+                    <ul class="space-y-3 text-gray-300 text-sm">
+                        <li class="flex gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-400 mt-1"></i>
+                            You can invest an unlimited amount
+                        </li>
+
+                        <li class="flex gap-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4 text-yellow-400 mt-1"></i>
+                            You may need to pay tax on any income or gains you make
+                        </li>
+                    </ul>
+
+                </div>
+
+
+                <!-- CARD 2 -->
+                <div class="bg-[#2a3553] p-6 rounded-xl">
+
+                    <h3 class="text-lg font-semibold mb-4">
+                        Stocks and Shares ISA
+                    </h3>
+
+                    <ul class="space-y-3 text-gray-300 text-sm">
+                        <li class="flex gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-400 mt-1"></i>
+                            You can invest up to £20,000 per tax year
+                        </li>
+
+                        <li class="flex gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-green-400 mt-1"></i>
+                            You pay no UK income or capital gains tax on returns
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1f2a44] text-white">
+
+        <!-- AWARDS -->
+        <div class="py-16 px-6 text-center">
+
+            <h2 class="text-2xl font-semibold mb-10">Our awards</h2>
+
+            <!-- AWARD IMAGES -->
+            <div class="flex flex-wrap justify-center items-center gap-8 mb-8">
+
+                <img src="./assets/images/Boring Money Best Buy ISA 2026.png" class="h-34 object-contain">
+                <img src="./assets/images/boring-money-best-for-customer-service-2026.png" class="h-34 object-contain">
+                <img src="./assets/images/boring-money-value-for-money-2026.png" class="h-34 object-contain">
+                <img src="./assets/images/Moneyfacts Best Stocks & Shares ISA Provider 2025.png"
+                    class="h-34 object-contain">
+
+            </div>
+
+            <!-- DESCRIPTION -->
+            <p class="text-gray-400 text-sm max-w-3xl mx-auto">
+                We were named <span class="text-white font-medium">‘Best Stocks & Shares ISA Provider’</span> at the
+                Moneyfacts Investment Life & Pensions Awards 2025.
+                We were also voted <span class="text-white font-medium">Best Buy ISA 2026</span>,
+                <span class="text-white font-medium">Best for Customer Service 2026</span> and
+                <span class="text-white font-medium">Value for Money Winner 2026</span>.
+            </p>
+
+        </div>
+
+
+        <!-- WHY CHOOSE -->
+        <div class="bg-[#2a3553] py-20 px-6">
+
+            <div class="max-w-6xl mx-auto text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-semibold">
+                    Why choose our Investment Account?
+                </h2>
+            </div>
+
+
+            <!-- FEATURES -->
+            <div class="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+
+                <!-- ITEM -->
+                <div class="text-center">
+                    <i data-lucide="file-text" class="w-7 h-7 mx-auto mb-4 text-blue-400"></i>
+                    <h3 class="font-semibold mb-2">Low fees</h3>
+                    <p class="text-gray-400 text-sm">
+                        One low annual fee, flat rate share dealing and no charge for many of our services.
+                    </p>
+                </div>
+
+                <!-- ITEM -->
+                <div class="text-center">
+                    <i data-lucide="smartphone" class="w-7 h-7 mx-auto mb-4 text-blue-400"></i>
+                    <h3 class="font-semibold mb-2">Easy to manage</h3>
+                    <p class="text-gray-400 text-sm">
+                        Place trades and check investments anytime in Online Banking or the Barclays app.
+                    </p>
+                </div>
+
+                <!-- ITEM -->
+                <div class="text-center">
+                    <i data-lucide="wallet" class="w-7 h-7 mx-auto mb-4 text-blue-400"></i>
+                    <h3 class="font-semibold mb-2">Earn interest</h3>
+                    <p class="text-gray-400 text-sm">
+                        Earn interest on cash held in your account.
+                        <a href="#" class="text-blue-400 underline">See current rates</a>.
+                    </p>
+                </div>
+
+                <!-- ITEM -->
+                <div class="text-center">
+                    <i data-lucide="shield" class="w-7 h-7 mx-auto mb-4 text-blue-400"></i>
+                    <h3 class="font-semibold mb-2">Secure</h3>
+                    <p class="text-gray-400 text-sm">
+                        FTSE 100 listed business with millions of customers worldwide and top security standards.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+
+                <button class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-full text-sm font-medium transition">
+                    Log in to apply
+                </button>
+
+                <button
+                    class="border border-blue-400 text-blue-400 hover:bg-blue-500 hover:text-white px-6 py-3 rounded-full text-sm font-medium transition">
+                    No login? Apply here
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1f2a44] text-white py-16 px-6">
+
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10">
+
+            <!-- LEFT: CALCULATOR -->
+            <div class="bg-[#111c36] p-6 rounded-xl space-y-6">
+
+                <!-- GROWTH RATE -->
+                <div>
+                    <h3 class="text-sm mb-3">Example growth rate</h3>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="rate" value="0.03">
+                            Low - 3%
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="rate" value="0.06" checked>
+                            Medium - 6%
+                        </label>
+
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="rate" value="0.08">
+                            High - 8%
+                        </label>
+                    </div>
+                </div>
+
+
+                <!-- INITIAL -->
+                <div>
+                    <label class="text-sm">Initial investment</label>
+                    <input id="initial" type="number" value="500"
+                        class="w-full bg-transparent border border-white/20 p-2 rounded mt-2">
+                </div>
+
+
+                <!-- MONTHLY -->
+                <div>
+                    <label class="text-sm">Monthly investment</label>
+                    <input id="monthly" type="number" value="50"
+                        class="w-full bg-transparent border border-white/20 p-2 rounded mt-2">
+                </div>
+
+
+                <!-- YEARS -->
+                <div>
+                    <label class="text-sm">Investment period (years)</label>
+                    <input id="years" type="number" value="10"
+                        class="w-full bg-transparent border border-white/20 p-2 rounded mt-2">
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT: CHART + RESULT -->
+            <div class="space-y-6">
+
+                <canvas id="chart" class="bg-[#111c36] p-4 rounded-xl"></canvas>
+
+                <!-- RESULTS -->
+                <div class="bg-[#111c36] p-6 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+
+                    <div>
+                        <p class="text-gray-400 text-sm">Better</p>
+                        <p id="better" class="text-lg font-semibold text-green-400">£0</p>
+                    </div>
+
+                    <div>
+                        <p class="text-gray-400 text-sm">Normal</p>
+                        <p id="normal" class="text-lg font-semibold text-blue-400">£0</p>
+                    </div>
+
+                    <div>
+                        <p class="text-gray-400 text-sm">Worse</p>
+                        <p id="worse" class="text-lg font-semibold text-red-400">£0</p>
+                    </div>
+
+                    <div>
+                        <p class="text-gray-400 text-sm">Contribution</p>
+                        <p id="contribution" class="text-lg font-semibold">£0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom Fixed CTA -->
+    <div class="fixed bottom-0 left-0 w-full bg-[#0f1b36] py-4 flex justify-center z-50">
+        <a href="#"
+            class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-400 text-black font-semibold text-md hover:scale-105 transition-all duration-300 shadow-lg">
+            Apply for a bank account
+        </a>
+    </div>
+
+    <footer class="bg-[#292B32] border-t border-gray-700 pt-16 pb-12 px-4 lg:px-20">
+        <div class="max-w-[1200px] mx-auto">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Our products</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Current accounts</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Savings</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Loans</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Mortgages</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Insurance</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Credit cards</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Help</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Help & FAQs</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Money worries</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report fraud or a scam</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report card lost or stolen</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Access to cash</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Site information</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Important information</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Accessibility</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Privacy policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Cookie policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Security</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Find us</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Find Barclays</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Service status</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 mb-8">
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <span class="font-bold text-sm">Download the Barclays app</span>
+                    <div class="flex gap-3">
+                        <a href="#"><img
+                                src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+                                alt="App Store" class="h-10"></a>
+                        <a href="#"><img
+                                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                                alt="Google Play" class="h-10"></a>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-white p-2 rounded-full text-black hover:bg-[#00AEEF] transition"><i
+                            data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+
+            <div class="text-[13px] text-gray-400 space-y-4 mb-12 max-w-5xl">
+                <p>Barclays Bank UK PLC and Barclays Bank PLC are each authorised by the Prudential Regulation
+                    Authority
+                    and regulated by the Financial Conduct Authority and the Prudential Regulation Authority.</p>
+                <p>Barclays Investment Solutions Limited is authorised and regulated by the Financial Conduct
+                    Authority.
+                </p>
+                <p>Registered office for all: 1 Churchill Place, London E14 5HP</p>
+            </div>
+
+            <div class="flex flex-wrap gap-6 items-center">
+                <div class="bg-white p-2 rounded h-16 w-16 flex items-center justify-center">
+                    <span
+                        class="text-[10px] text-purple-900 font-bold text-center leading-none">fscs<br>PROTECTED</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <div class="w-8 h-8 bg-blue-600 flex items-center justify-center rounded-sm">
+                        <i data-lucide="check" class="text-white w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] leading-tight font-bold">CYBER<br>ESSENTIALS<br>CERTIFIED PLUS</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>Secure Digital Banking<br>KITEMARK™
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="lock" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>ISO/IEC 27001 Information Security
+                        Management<br>CERTIFIED
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- CHART.JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize Lucide
+        lucide.createIcons();
+        // Initialize AOS
+        AOS.init({ duration: 800, once: true, easing: 'ease-in-out' });
+    </script>
+    <script>
+        lucide.createIcons();
+
+        // 1. Mobile Menu Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenu = document.getElementById('close-menu');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('menu-overlay');
+
+        function toggleMenu() {
+            drawer.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+            setTimeout(() => overlay.classList.toggle('opacity-100'), 10);
+            document.body.style.overflow = drawer.classList.contains('translate-x-full') ? '' : 'hidden';
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenu.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // 2. Search Bar Logic
+        const searchTrigger = document.getElementById('search-trigger');
+        const searchBar = document.getElementById('search-bar');
+        const closeSearch = document.getElementById('close-search');
+
+        searchTrigger.addEventListener('click', () => {
+            searchBar.classList.remove('-translate-y-full');
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchBar.classList.add('-translate-y-full');
+        });
+    </script>
+    <script>
+        const ctx = document.getElementById('chart');
+
+        let chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    { label: 'Better', borderColor: 'red', data: [] },
+                    { label: 'Normal', borderColor: 'green', data: [] },
+                    { label: 'Worse', borderColor: 'blue', data: [] }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: 'white' } } },
+                scales: {
+                    x: { ticks: { color: 'white' } },
+                    y: { ticks: { color: 'white' } }
+                }
+            }
+        });
+
+
+        function calculate(rate, initial, monthly, years) {
+            let values = [];
+            let total = initial;
+
+            for (let i = 0; i <= years; i++) {
+                total = total * (1 + rate) + monthly * 12;
+                values.push(Math.round(total));
+            }
+
+            return values;
+        }
+
+
+        function updateChart() {
+            const rate = parseFloat(document.querySelector('input[name="rate"]:checked').value);
+            const initial = parseFloat(document.getElementById('initial').value);
+            const monthly = parseFloat(document.getElementById('monthly').value);
+            const years = parseInt(document.getElementById('years').value);
+
+            const labels = Array.from({ length: years + 1 }, (_, i) => i);
+
+            const better = calculate(rate + 0.02, initial, monthly, years);
+            const normal = calculate(rate, initial, monthly, years);
+            const worse = calculate(rate - 0.02, initial, monthly, years);
+
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = better;
+            chart.data.datasets[1].data = normal;
+            chart.data.datasets[2].data = worse;
+            chart.update();
+
+            // RESULTS
+            document.getElementById('better').innerText = "£" + better.at(-1).toLocaleString();
+            document.getElementById('normal').innerText = "£" + normal.at(-1).toLocaleString();
+            document.getElementById('worse').innerText = "£" + worse.at(-1).toLocaleString();
+
+            const contribution = initial + monthly * 12 * years;
+            document.getElementById('contribution').innerText = "£" + contribution.toLocaleString();
+        }
+        
+        // LISTENERS
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', updateChart);
+        });
+
+        // INIT
+        updateChart();
+    </script>
+</body>
+
+</html>

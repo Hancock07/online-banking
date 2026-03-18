@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barclays Clone - Online Banking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        const root = document.documentElement;
+
+        root.style.setProperty('--primary-color', '#002D56');
+        root.style.setProperty('--primary-color-dark', '#001D3D');
+        root.style.setProperty('--primary-color-light', '#004A8F');
+
+        root.style.setProperty('--secondary-color', '#00AEEF');
+        root.style.setProperty('--secondary-color-dark', '#008CBE');
+        root.style.setProperty('--secondary-color-light', '#B3E8FB');
+
+        root.style.setProperty('--text-color', '#ffffff');
+        root.style.setProperty('--bg-color', '#121921');
+        root.style.setProperty('--card-bg-color', '#1a232e');
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: 'var(--primary-color)',
+                            dark: 'var(--primary-color-dark)',
+                            light: 'var(--primary-color-light)',
+                        },
+                        secondary: {
+                            DEFAULT: 'var(--secondary-color)',
+                            dark: 'var(--secondary-color-dark)',
+                            light: 'var(--secondary-color-light)',
+                        },
+                        'app-bg': 'var(--bg-color)',
+                        'card-navy': 'var(--card-bg-color)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-[#121921] text-white font-sans overflow-x-hidden">
+
+    <div id="search-bar"
+        class="fixed top-0 left-0 w-full bg-[#001D3D] border-b border-blue-900 p-4 z-[100] transform -translate-y-full transition-transform duration-300 ease-in-out">
+        <div
+            class="max-w-4xl mx-auto flex items-center bg-[#121921] rounded-full px-4 py-2 border border-blue-800 focus-within:border-[#00AEEF]">
+            <i data-lucide="search" class="text-gray-400 w-5 h-5 mr-3"></i>
+            <input type="text" placeholder="What are you looking for?"
+                class="bg-transparent w-full outline-none text-white text-sm">
+            <button id="close-search" class="text-gray-400 hover:text-white"><i data-lucide="x"
+                    class="w-5 h-5"></i></button>
+        </div>
+    </div>
+
+    <div id="menu-overlay"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300">
+    </div>
+    <div id="mobile-drawer"
+        class="fixed top-0 right-0 h-full w-[80%] max-w-sm bg-[#002D56] z-[70] transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl p-6">
+        <div class="flex justify-between items-center mb-8">
+            <span class="text-[#00AEEF] font-bold">MENU</span>
+            <button id="close-menu" class="text-white"><i data-lucide="x"></i></button>
+        </div>
+        <nav class="flex flex-col space-y-6 font-bold">
+            <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+            <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+            <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+            <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+            <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Savings</a>
+            <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+            <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+            <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+            <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+        </nav>
+    </div>
+
+    <nav class="bg-[#002D56] border-b border-blue-900 px-4 py-3 lg:px-20 relative z-50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <div class="flex items-center space-x-2 text-2xl font-bold tracking-tighter text-[#00AEEF]">
+                    <i data-lucide="bird"></i>
+                    <span>BARCLAYS</span>
+                </div>
+                <div class="hidden lg:flex space-x-6 text-sm font-medium">
+                    <a href="#" class="border-b-2 border-[#00AEEF] pb-1">Personal</a>
+                    <a href="#" class="hover:text-blue-300">Business</a>
+                    <a href="#" class="hover:text-blue-300">Corporate</a>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <button id="search-trigger" class="hidden md:flex items-center text-sm">
+                    <i data-lucide="search" class="w-4 h-4 mr-2"></i>Search
+                </button>
+                <button
+                    class="bg-[#00AEEF] text-[#002D56] px-6 py-2 rounded-full font-bold text-sm hover:bg-white transition">
+                    Log in
+                </button>
+                <button class="lg:hidden" id="menu-btn"><i data-lucide="menu"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hidden lg:flex bg-[#002D56] px-20 py-4 space-x-8 text-sm border-t border-blue-800 font-bold sticky top-0 z-50">
+        <a href="./bank-account.html" class="hover:text-[#00AEEF]">Accounts</a>
+        <a href="./mortgages.html" class="hover:text-[#00AEEF]">Mortgages</a>
+        <a href="./loans.html" class="hover:text-[#00AEEF]">Loans</a>
+        <a href="./credit-cards.html" class="hover:text-[#00AEEF]">Credit cards</a>
+        <a href="./savings.html" class="hover:text-[#00AEEF]">Savings</a>
+        <a href="./investment-account.html" class="hover:text-[#00AEEF]">Investments</a>
+        <a href="#" class="hover:text-[#00AEEF]">Insurance</a>
+        <a href="#" class="hover:text-[#00AEEF]">Ways to Bank</a>
+        <a href="#" class="hover:text-[#00AEEF]">Help and Support</a>
+    </div>
+
+    <section class="max-w-[1200px] mx-auto px-8 py-16 bg-blue-500">
+        <div class="relative overflow-hidden rounded-3xl shadow-2xl bg-gradient-to-br from-[#003d73] to-[#001D3D] group"
+            data-aos="fade-up">
+
+            <div
+                class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                <i data-lucide="bird" class="w-80 h-80 text-white"></i>
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center">
+                <div class="md:w-3/5 p-10 md:p-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
+                        New to digital banking?
+                    </h2>
+                    <p class="text-blue-100 text-lg mb-10 max-w-lg leading-relaxed">
+                        Our step-by-step guides show you how to register and use our digital services,
+                        so you can manage your money whenever and wherever you want.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button
+                            class="bg-secondary text-primary font-bold px-10 py-3 rounded-full hover:bg-white transition-all shadow-lg">
+                            See our guides
+                        </button>
+                    </div>
+                </div>
+
+                <div class="md:w-2/5 w-full h-64 md:h-auto self-stretch">
+                    <img src="./assets/images/digital-banking-lifestyle.jpg" alt="Step-by-step guide"
+                        class="w-full h-full object-cover md:rounded-l-3xl shadow-inner">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#0b1324] py-16">
+        <div class="max-w-7xl mx-auto px-6" data-aos="fade-up">
+
+            <!-- Heading -->
+            <div class="text-center mb-14">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">
+                    Get the most from your Barclays Bank Account
+                </h2>
+                <p class="text-gray-400 mt-3">
+                    Check out the features that make our current account a great choice for everyone.
+                </p>
+            </div>
+
+            <!-- Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <!-- Card -->
+                <div class="bg-[#1b2338] p-8 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-700 flex items-center justify-center rounded-lg mb-6">
+                        <i data-lucide="bar-chart-3" class="text-white"></i>
+                    </div>
+
+                    <h3 class="text-white text-xl font-semibold mb-3">
+                        Money Management Tools
+                    </h3>
+
+                    <p class="text-gray-400 mb-4">
+                        Track where and when you’ve spent with our app and Online Banking and stay in control of your
+                        cash.
+                    </p>
+
+                    <a href="#" class="text-blue-400 flex items-center gap-2">
+                        Explore our tools
+                        <i data-lucide="chevron-right"></i>
+                    </a>
+                </div>
+
+                <!-- Card -->
+                <div class="bg-[#1b2338] p-8 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-700 flex items-center justify-center rounded-lg mb-6">
+                        <i data-lucide="message-circle" class="text-white"></i>
+                    </div>
+
+                    <h3 class="text-white text-xl font-semibold mb-3">
+                        Help when you need it
+                    </h3>
+
+                    <p class="text-gray-400">
+                        When you open a bank account online, you can get in touch with us easily. Just send us a message
+                        from the ‘Help’ section of the app or Online Banking and we’ll let you know when we’ve replied.
+                    </p>
+                </div>
+
+                <!-- Card -->
+                <div class="bg-[#1b2338] p-8 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-700 flex items-center justify-center rounded-lg mb-6">
+                        <i data-lucide="shield-check" class="text-white"></i>
+                    </div>
+
+                    <h3 class="text-white text-xl font-semibold mb-3">
+                        Award-winning security
+                    </h3>
+
+                    <p class="text-gray-400">
+                        We’re the only bank in the UK to have received Secure Digital Banking kitemarks for our app and
+                        Online Banking
+                    </p>
+                </div>
+
+                <!-- Card -->
+                <div class="bg-[#1b2338] p-8 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-700 flex items-center justify-center rounded-lg mb-6">
+                        <i data-lucide="globe" class="text-white"></i>
+                    </div>
+
+                    <h3 class="text-white text-xl font-semibold mb-3">
+                        Travel Wallet
+                    </h3>
+
+                    <p class="text-gray-400 mb-4">
+                        Swap the currency exchange queue for the app. Buy US dollars and euros to spend on your existing
+                        debit card, then easily convert them back to pounds(3). It's more convenient than carrying cash
+                        and there are no transaction fees.
+                    </p>
+
+                    <a href="#" class="text-blue-400 flex items-center gap-2">
+                        Explore Travel Wallet
+                        <i data-lucide="chevron-right"></i>
+                    </a>
+                </div>
+
+                <!-- Card -->
+                <div class="bg-[#1b2338] p-8 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-700 flex items-center justify-center rounded-lg mb-6">
+                        <i data-lucide="check-square" class="text-white"></i>
+                    </div>
+
+                    <h3 class="text-white text-xl font-semibold mb-3">
+                        Optional overdraft
+                    </h3>
+
+                    <p class="text-gray-400 mb-4">
+                        Set up an arranged overdraft to suit your needs. Subject to application, financial circumstances
+                        and borrowing history.
+                    </p>
+
+                    <a href="#" class="text-blue-400 flex items-center gap-2">
+                        About Overdraft
+                        <i data-lucide="chevron-right"></i>
+                    </a>
+                </div>
+
+                <!-- Card -->
+                <div class="bg-[#1b2338] p-8 rounded-xl">
+                    <div class="w-12 h-12 bg-blue-700 flex items-center justify-center rounded-lg mb-6">
+                        <i data-lucide="credit-card" class="text-white"></i>
+                    </div>
+
+                    <h3 class="text-white text-xl font-semibold mb-3">
+                        Personalise your card
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Make your debit card truly yours by adding a photo that brings a smile to your face every time
+                        you pay. It's quick, easy, and uniquely you. <span><a href="#"
+                                class="text-blue-400 underline">Terms and conditions apply</a></span>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-24">
+        <div class="max-w-7xl mx-auto px-6" data-aos="fade-up">
+
+            <!-- Heading -->
+            <div class="text-center mb-20">
+                <h2 class="text-2xl md:text-4xl font-semibold text-white">
+                    Join the 12 million customers banking in our app
+                </h2>
+
+                <p class="text-gray-400 mt-4 max-w-3xl mx-auto">
+                    Banking made simple, secure and always within reach – whether you're
+                    checking your balance, sending money, or managing your spending.
+                </p>
+            </div>
+
+            <!-- Content -->
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+                <!-- Phone Image -->
+                <div class="flex justify-center">
+                    <img src="./assets/images/Travel-Wallet-dark.png" class="max-h-[520px] drop-shadow-2xl"
+                        alt="Bank App">
+                </div>
+
+                <!-- Text -->
+                <div class="max-w-lg">
+
+                    <h3 class="text-3xl font-semibold text-white leading-snug">
+                        Powerful features at your fingertips
+                    </h3>
+
+                    <p class="text-gray-400 mt-5 leading-relaxed">
+                        From smart budgeting tools to instant notifications and card
+                        controls, the Barclays app helps you stay in control –
+                        wherever life takes you.
+                    </p>
+
+                    <!-- Button -->
+                    <a href="#" class="inline-block mt-8 px-8 py-3 border border-blue-500
+                  text-blue-400 rounded-full
+                  hover:bg-blue-500 hover:text-white
+                  transition duration-300">
+                        Download the app
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-20">
+        <div class="max-w-7xl mx-auto px-6" data-aos="fade-up">
+
+            <!-- Title -->
+            <h2 class="text-center text-3xl md:text-4xl font-semibold text-white mb-14">
+                More account features
+            </h2>
+
+            <!-- Feature Cards -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <!-- Card 1 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl">
+                    <h3 class="text-xl font-semibold text-white mb-3">
+                        Digital wallets
+                    </h3>
+
+                    <p class="text-gray-400 mb-4">
+                        Make fast, secure payments in shops and in apps using your device.
+                    </p>
+
+                    <p class="text-blue-400 text-sm">
+                        Explore Apple Pay, Google Pay & Samsung Pay.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl">
+                    <h3 class="text-xl font-semibold text-white mb-3">
+                        Instant spending notifications
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Track your spending in real time with instant notifications and smart insights.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl">
+                    <h3 class="text-xl font-semibold text-white mb-3">
+                        Online Banking and our app
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Manage your finances with Online Banking and the Barclays app.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- Blue Rewards CTA -->
+    <section class="bg-gradient-to-r from-blue-700 to-blue-500 py-16">
+        <div class="max-w-4xl mx-auto px-6 text-center" data-aos="fade-up">
+
+            <h2 class="text-3xl md:text-4xl font-semibold text-white mb-6">
+                Boost your account with Blue Rewards
+            </h2>
+
+            <p class="text-blue-100 leading-relaxed mb-8">
+                Get access to enhanced rates on savings, cashback on everyday spending,
+                and an Apple TV subscription – all for just £5 a month.
+                Eligibility terms and conditions apply.
+            </p>
+
+            <a href="#" class="inline-block bg-white text-blue-700 font-semibold
+              px-8 py-3 rounded-full hover:scale-105 transition">
+                Explore Blue Rewards
+            </a>
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-20">
+        <div class="max-w-7xl mx-auto px-6" data-aos="fade-up">
+
+            <!-- Title -->
+            <h2 class="text-center text-3xl md:text-4xl font-semibold text-white mb-16">
+                How to open a Barclays Bank Account
+            </h2>
+
+            <!-- Steps -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+
+                <!-- Step 1 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl text-center relative">
+
+                    <div
+                        class="w-12 h-12 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-700 text-white font-bold text-lg">
+                        1
+                    </div>
+
+                    <h3 class="text-xl text-white font-semibold mb-2">
+                        Download our app
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Get it from the App Store or Google Play.
+                    </p>
+
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl text-center relative">
+
+                    <div
+                        class="w-12 h-12 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-700 text-white font-bold text-lg">
+                        2
+                    </div>
+
+                    <h3 class="text-xl text-white font-semibold mb-2">
+                        Verify your identity
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Use your phone's camera and ID to confirm who you are.
+                    </p>
+
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-[#1d2742] p-8 rounded-xl text-center relative">
+
+                    <div
+                        class="w-12 h-12 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-700 text-white font-bold text-lg">
+                        3
+                    </div>
+
+                    <h3 class="text-xl text-white font-semibold mb-2">
+                        Set up your account
+                    </h3>
+
+                    <p class="text-gray-400">
+                        Add your details, choose your preferences and start banking.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- App Store Buttons -->
+            <div class="flex justify-center gap-6 mb-8 flex-wrap">
+
+                <img src="./assets/images/apple-appstore.png" class="h-12" alt="App Store">
+
+                <img src="./assets/images/google-play.png" class="h-12" alt="Google Play">
+
+            </div>
+
+            <!-- Existing users -->
+            <p class="text-center text-gray-400 mb-6">
+                If you're already with us, you can add a new account with Online Banking or in the app.
+            </p>
+
+            <div class="flex justify-center">
+                <a href="#"
+                    class="px-8 py-3 border border-blue-500 text-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition">
+                    Log into online banking
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Terms Section -->
+    <section class="bg-[#1a233d] py-16">
+        <div class="max-w-4xl mx-auto px-6 text-center" data-aos="fade-up">
+            <h2 class="text-3xl font-semibold text-white mb-4">
+                Terms and Conditions
+            </h2>
+
+            <p class="text-gray-400 mb-10">
+                Please read these important guides to your rights and responsibilities when using the Barclays Bank
+                Account.
+            </p>
+
+            <div class="bg-[#0f1b36] rounded-xl p-6 flex items-center justify-between">
+                <span class="text-white font-medium">
+                    Terms and conditions for personal accounts
+                </span>
+                <a href="#" class="flex items-center gap-2 text-blue-400 hover:text-blue-300">
+                    View
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor"
+                        stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6" />
+                    </svg>
+                </a>
+            </div>
+
+            <div class="bg-[#0f1b36] rounded-xl p-6 flex items-center justify-between">
+                <span class="text-white font-medium">
+                    Tariff of charges for Personal Accounts
+                </span>
+                <a href="#" class="flex items-center gap-2 text-blue-400 hover:text-blue-300">
+                    View
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor"
+                        stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6" />
+                    </svg>
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="bg-[#0f1b36] py-24">
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center" data-aos="fade-up">
+
+            <!-- Phone Image -->
+            <div class="flex justify-center">
+                <img src="./assets/images/Travel-Wallet-dark.png" class="max-h-[550px] drop-shadow-2xl"
+                    alt="Banking app">
+            </div>
+
+            <!-- Text Content -->
+            <div class="max-w-lg">
+
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-6">
+                    To open a Barclays Bank Account, you'll need to:
+                </h2>
+
+                <ul class="space-y-3 text-gray-300 mb-6 list-disc pl-5">
+
+                    <li>Be aged 18 or over</li>
+                    <li>Be a UK resident</li>
+                    <li>Have a UK mobile number</li>
+                    <li>Provide proof of identity, like a passport or driving licence.</li>
+
+                </ul>
+
+                <p class="text-gray-400 mb-6">
+                    If you don’t have a UK mobile number, you can
+                    <a href="#" class="text-blue-400 underline">apply online</a> instead
+                </p>
+
+                <a href="#" class="inline-block bg-blue-500 hover:bg-blue-600 text-white
+                px-8 py-3 rounded-full font-medium transition">
+                    Get started
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Premier Banking CTA -->
+    <section class="bg-[#0b5a5d] py-4">
+        <div class="max-w-4xl mx-auto text-center px-6" data-aos="fade-up">
+            <h2 class="text-2xl md:text-2xl font-semibold text-white mb-4">
+                Premier Banking
+            </h2>
+
+            <p class="text-teal-100 mb-8 leading-relaxed text-md">
+                Discover a world of Premier benefits and perks, with access to exclusive
+                savings rates and mortgage options, 24/7 UK-based support and higher
+                payment limits. T&Cs apply.
+            </p>
+
+            <a href="#" class="inline-block bg-[#a7e0d8] text-[#0b5a5d] font-semibold
+              px-6 py-2 rounded-full hover:scale-105 transition text-sm">
+                Explore Premier Banking
+            </a>
+
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-20">
+        <div class="max-w-3xl mx-auto px-6 text-center" data-aos="fade-up">
+
+            <!-- Promo Card -->
+            <div
+                class="w-full h-40 md:h-40 lg:h-64 bg-[url('./assets/images/card.png')] bg-center bg-cover bg-no-repeat rounded-xl mb-10">
+            </div>
+
+            <!-- Title -->
+            <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
+                Get £400 when you switch to us
+            </h2>
+
+            <p class="text-gray-400 max-w-2xl mx-auto mb-8">
+                Enjoy a switch bonus when you open a Premier Current Account with us in the
+                Barclays app using the Current Account Switch Service by 30 April 2026.
+                T&Cs and eligibility criteria apply.
+            </p>
+
+            <!-- Button -->
+            <a href="#" class="inline-block border border-blue-500 text-blue-400
+          px-8 py-3 rounded-full hover:bg-blue-500 hover:text-white
+          transition mb-16">
+                Switch to us
+            </a>
+
+        </div>
+
+
+        <!-- FAQ Section -->
+        <div class="max-w-4xl mx-auto px-6">
+
+            <h3 class="text-center text-3xl font-semibold text-white mb-10">
+                Frequently asked questions
+            </h3>
+
+            <div class="space-y-3">
+                <!-- FAQ Item -->
+                <details class="bg-[#1d2742] rounded-lg p-5 group">
+
+                    <summary class="flex justify-between items-center cursor-pointer text-white font-medium text-sm">
+
+                        What do I need to open a Barclays Bank Account?
+
+                        <span class="transition group-open:rotate-180"><i data-lucide="chevron-down"
+                                class="w-5 h-5 transition-transform duration-300 group-open:rotate-180">
+                            </i></span>
+
+                    </summary>
+
+                    <div class="text-gray-400 mt-4">
+                        <p>If you’re opening an account through your app, you’ll need proof of identity, three years of
+                            address history and a UK mobile number.</p>
+                        <p>We accept these documents as proof of identity:</p>
+                        <ul style="list-style-type: disc;">
+                            <li>Passport</li>
+                            <li>UK, EU or EEA full driving licence.</li>
+                        </ul>
+                        <p>You can download the Barclays app from the Apple App Store or Google Play Store.</p>
+                        <p>If you don’t have a UK mobile number, or one of the documents listed above, you can apply for
+                            a
+                            Barclays Bank Account online.</p>
+                        <p>If you need any help or to talk about alternative ways to open an account, please call us on
+                            0345 7345 345. We’re here Monday to Friday from 8am to 8pm, and Saturday from 9am to 5pm. We
+                            may
+                            monitor and record phone calls. Call charges.</p>
+                    </div>
+
+                </details>
+
+
+                <details class="bg-[#1d2742] rounded-lg p-5 group">
+
+                    <summary class="flex justify-between items-center cursor-pointer text-white font-medium text-sm">
+
+                        Can I get an overdraft with my current account?
+
+                        <span class="transition group-open:rotate-180"><i data-lucide="chevron-down"
+                                class="w-5 h-5 transition-transform duration-300 group-open:rotate-180">
+                            </i></span>
+
+                    </summary>
+
+                    <p class="text-gray-400 mt-4">
+                        Yes, we offer arranged overdrafts with our current accounts. An arranged overdraft allows you to
+                        borrow money through your current account. All overdrafts are subject to application, financial
+                        circumstances and borrowing history.
+                    </p>
+
+                </details>
+
+
+                <details class="bg-[#1d2742] rounded-lg p-5 group">
+
+                    <summary class="flex justify-between items-center cursor-pointer text-white font-medium text-sm">
+
+                        How long does it take to open a Barclays Bank Account through the Barclays app?
+
+                        <span class="transition group-open:rotate-180"><i data-lucide="chevron-down"
+                                class="w-5 h-5 transition-transform duration-300 group-open:rotate-180">
+                            </i></span>
+
+                    </summary>
+
+                    <p class="text-gray-400 mt-4">
+                        Applying for a Barclays Bank Account on the app should take 10 to 15 minutes. If your
+                        application is approved, then you’ll get your account details right away and can start using the
+                        account immediately. Your Barclays debit card will be sent separately – it’ll arrive within
+                        seven working days. You PIN will be available within the app in 24 hours.
+                    </p>
+
+                </details>
+
+
+                <details class="bg-[#1d2742] rounded-lg p-5 group">
+
+                    <summary class="flex justify-between items-center cursor-pointer text-white font-medium text-sm">
+
+                        I've just moved to the country – can I open a Barclays Bank Account?
+
+                        <span class="transition group-open:rotate-180"><i data-lucide="chevron-down"
+                                class="w-5 h-5 transition-transform duration-300 group-open:rotate-180">
+                            </i></span>
+
+                    </summary>
+
+                    <p class="text-gray-400 mt-4">
+                        Yes, anyone with a passport is eligible to open a Barclays Bank Account through the Barclays
+                        app. If you are looking to use an eVisa then an appointment will need to be made in Branch.
+                        You’ll need proof of your identity (ID) and your UK address.
+
+                        Book an appointment
+                    </p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#0f1b36] py-20">
+        <div class="max-w-7xl mx-auto px-6" data-aos="fade-up">
+
+            <!-- Header -->
+            <div class="text-center mb-16">
+
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
+                    Get even more from your Barclays Bank Account
+                </h2>
+
+                <p class="text-gray-400 max-w-3xl mx-auto">
+                    Explore ways to unblock more from your Barclays account – whether you're planning a trip,
+                    protecting your tech or ready for a more personalised banking experience.
+                </p>
+
+            </div>
+
+
+            <!-- Cards -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- Card 1 -->
+                <div>
+
+                    <img src="./assets/images/travel.jpg" class="rounded-xl mb-6 w-full h-56 object-cover">
+
+                    <h3 class="text-xl text-white font-semibold mb-3">
+                        Add a Travel or Tech Pack
+                    </h3>
+
+                    <p class="text-gray-400 mb-6">
+                        Cover what matters most. Get worldwide travel insurance or mobile and gadget cover
+                        for a monthly fee – easy to add, easy to manage.
+                    </p>
+
+                    <div class="flex gap-4">
+
+                        <a href="#"
+                            class="px-6 py-2 border border-blue-500 text-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition">
+                            Travel Pack
+                        </a>
+
+                        <a href="#"
+                            class="px-6 py-2 border border-blue-500 text-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition">
+                            Tech Pack
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Card 2 -->
+                <div>
+
+                    <img src="./assets/images/wallet.jpg" class="rounded-xl mb-6 w-full h-56 object-cover">
+
+                    <h3 class="text-xl text-white font-semibold mb-3">
+                        Use your Travel Wallet
+                    </h3>
+
+                    <p class="text-gray-400 mb-6">
+                        Spend abroad the smart way. Hold and convert currencies in your app,
+                        then spend with your debit card – no extra fees, no surprises.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block px-6 py-2 border border-blue-500 text-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition">
+                        More about Travel Wallets
+                    </a>
+
+                </div>
+
+
+                <!-- Card 3 -->
+                <div>
+
+                    <img src="./assets/images/invest.jpg" class="rounded-xl mb-6 w-full h-56 object-cover">
+
+                    <h3 class="text-xl text-white font-semibold mb-3">
+                        Looking to save or invest?
+                    </h3>
+
+                    <p class="text-gray-400 mb-6">
+                        If you don’t know where to start, our guide has all you need to know
+                        about the ISAs we offer and how you can grow your money tax-efficiently.
+                    </p>
+
+                    <a href="#"
+                        class="inline-block px-6 py-2 border border-blue-500 text-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition">
+                        Read our guide to ISAs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-[#1b2545] py-10">
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center" data-aos="fade-up">
+
+            <!-- Left Content -->
+            <div>
+
+                <h2 class="text-2xl font-semibold text-white mb-4">
+                    Open a Barclays Bank Account
+                </h2>
+
+                <h3 class="text-lg text-white mb-6">
+                    Scan the QR code using your phone camera to get started
+                </h3>
+
+                <p class="text-gray-300 mb-8">
+                    Scan the QR code with your phone or tablet, or tap the App Store or Google Play buttons below to
+                    download the app and begin your application. T&Cs and eligibility apply. 18+ and UK only.
+                </p>
+
+                <div class="flex gap-4 flex-wrap">
+
+                    <img src="./assets/images/apple-appstore.png" class="h-12">
+
+                    <img src="./assets/images/google-play.png" class="h-12">
+
+                </div>
+
+            </div>
+            <!-- QR Code -->
+            <div class="flex justify-center lg:justify-end">
+
+                <div class="bg-white p-6 rounded-2xl">
+                    <img src="./assets/images/qr.png" class="w-56 h-56 object-contain">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Feedback Section -->
+    <section class="bg-[#0f1b36] py-16 text-center">
+        <h3 class="text-white text-xl font-semibold mb-3" data-aos="fade-up">
+            Was this helpful?
+        </h3>
+
+        <p class="text-gray-400 mb-8" data-aos="fade-up">
+            Your feedback helps us improve your experience.
+        </p>
+
+        <div class="flex justify-center gap-6" data-aos="fade-up">
+
+            <button
+                class="flex items-center gap-2 border border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                Yes
+                <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+            </button>
+
+            <button
+                class="flex items-center gap-2 border border-blue-500 text-blue-400 px-6 py-2 rounded-full hover:bg-blue-500 hover:text-white transition">
+                No
+                <i data-lucide="thumbs-down" class="w-4 h-4"></i>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- Return to top -->
+    <div class="bg-gray-300 text-center py-4">
+        <a href="#" class="text-gray-700 underline" data-aos="fade-up">
+            Return to top
+        </a>
+
+    </div>
+
+
+    <!-- Bottom Fixed CTA -->
+    <div class="fixed bottom-0 left-0 w-full bg-[#0f1b36] py-4 flex justify-center z-50">
+        <a href="#"
+            class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-400 text-black font-semibold text-md hover:scale-105 transition-all duration-300 shadow-lg">
+            Apply for a bank account
+        </a>
+    </div>
+
+    <footer class="bg-[#292B32] border-t border-gray-700 pt-16 pb-12 px-4 lg:px-20">
+        <div class="max-w-[1200px] mx-auto">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Our products</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Current accounts</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Savings</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Loans</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Mortgages</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Insurance</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Credit cards</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Help</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Help & FAQs</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Money worries</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report fraud or a scam</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Report card lost or stolen</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Access to cash</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Site information</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Important information</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Accessibility</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Privacy policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Cookie policy</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Security</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-lg mb-6">Find us</h5>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Find Barclays</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Service status</a></li>
+                        <li><a href="#" class="footer-link hover:text-[#00AEEF]">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 mb-8">
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <span class="font-bold text-sm">Download the Barclays app</span>
+                    <div class="flex gap-3">
+                        <a href="#"><img
+                                src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+                                alt="App Store" class="h-10"></a>
+                        <a href="#"><img
+                                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                                alt="Google Play" class="h-10"></a>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="facebook" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-[#00AEEF] p-2 rounded-full text-[#121921] hover:bg-white transition"><i
+                            data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" class="bg-white p-2 rounded-full text-black hover:bg-[#00AEEF] transition"><i
+                            data-lucide="twitter" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+
+            <div class="text-[13px] text-gray-400 space-y-4 mb-12 max-w-5xl">
+                <p>Barclays Bank UK PLC and Barclays Bank PLC are each authorised by the Prudential Regulation
+                    Authority
+                    and regulated by the Financial Conduct Authority and the Prudential Regulation Authority.</p>
+                <p>Barclays Investment Solutions Limited is authorised and regulated by the Financial Conduct
+                    Authority.
+                </p>
+                <p>Registered office for all: 1 Churchill Place, London E14 5HP</p>
+            </div>
+
+            <div class="flex flex-wrap gap-6 items-center">
+                <div class="bg-white p-2 rounded h-16 w-16 flex items-center justify-center">
+                    <span
+                        class="text-[10px] text-purple-900 font-bold text-center leading-none">fscs<br>PROTECTED</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <div class="w-8 h-8 bg-blue-600 flex items-center justify-center rounded-sm">
+                        <i data-lucide="check" class="text-white w-5 h-5"></i>
+                    </div>
+                    <span class="text-[10px] leading-tight font-bold">CYBER<br>ESSENTIALS<br>CERTIFIED PLUS</span>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>Secure Digital Banking<br>KITEMARK™
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 border border-gray-600 p-2 rounded h-16">
+                    <i data-lucide="lock" class="w-8 h-8 text-gray-300"></i>
+                    <div class="text-[9px] leading-tight">
+                        <span class="font-bold">bsi.</span><br>ISO/IEC 27001 Information Security
+                        Management<br>CERTIFIED
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize Lucide
+        lucide.createIcons();
+        // Initialize AOS
+        AOS.init({ duration: 800, once: true, easing: 'ease-in-out' });
+    </script>
+    <script>
+        lucide.createIcons();
+
+        // 1. Mobile Menu Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenu = document.getElementById('close-menu');
+        const drawer = document.getElementById('mobile-drawer');
+        const overlay = document.getElementById('menu-overlay');
+
+        function toggleMenu() {
+            drawer.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+            setTimeout(() => overlay.classList.toggle('opacity-100'), 10);
+            document.body.style.overflow = drawer.classList.contains('translate-x-full') ? '' : 'hidden';
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+        closeMenu.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // 2. Search Bar Logic
+        const searchTrigger = document.getElementById('search-trigger');
+        const searchBar = document.getElementById('search-bar');
+        const closeSearch = document.getElementById('close-search');
+
+        searchTrigger.addEventListener('click', () => {
+            searchBar.classList.remove('-translate-y-full');
+        });
+
+        closeSearch.addEventListener('click', () => {
+            searchBar.classList.add('-translate-y-full');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,1 +1,40 @@
+:root {
+    --primary-color: #002D56;
+    --primary-color-light: #00AEEF;
+    --primary-color-dark: #0b1119;
+    --primary-card-dark: #1a232e;
+}
 
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.barclays-blue {
+    background-color: var(--primary-color);
+}
+
+.barclays-cyan {
+    background-color: var(--primary-color-light);
+}
+
+.text-cyan {
+    color: var(--primary-color-light);
+}
+
+.bg-dark-navy {
+    background-color: var(--primary-color-dark);
+}
+
+.bg-card-navy {
+    background-color: var(--primary-card-dark);
+}
+
+.footer-link {
+    color: #ffffff;
+    text-decoration: underline;
+    font-size: 0.875rem;
+}
+
+.footer-link:hover {
+    color: var(--primary-color-light);
+}
